@@ -9,7 +9,7 @@ export async function createUser(username, password) {
     throw new Error('Username already exists.');
   }
   try{
-    const passwordhash = bcrypt.hashSync(password, 15)
+    const passwordhash = bcrypt.hashSync(password, 10)
     return await prisma.user.create({
       data: {
         username,
@@ -18,6 +18,25 @@ export async function createUser(username, password) {
     })
   }catch(err){
     console.log("Error creating user: ", err)
+  }
+}
+export async function login(username, password){
+  try{
+    const getUser = await prisma.user.findUnique({
+      where: {
+        username: username
+      }
+    })
+    if (!getUser){
+      return
+    }
+    const passwordIsCorrect = bcrypt.compareSync(password, getUser.passwordhash)
+    if (!passwordIsCorrect){
+      return
+    }
+    return getUser
+  }catch(error){
+    console.log("Error logging in: ", err)
   }
 }
 export default prisma
