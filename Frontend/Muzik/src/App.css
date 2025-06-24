@@ -10,6 +10,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2; 
 }
 
 h1 {
@@ -30,9 +32,18 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  background-color: #1aa84a;
 }
 #sign-up-link:hover{
   color: green;
   cursor: pointer;
 }
+#sign-up-form{
+  max-width: 19rem;
+  padding: 7rem;
+}
+label{
+  display: block;
+  margin-bottom: 2rem;
+}
+
