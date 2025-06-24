@@ -1,13 +1,28 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../api";
 export default function Login(){
+  const navigate = useNavigate()
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  function handleLogin(user){
+    login(user);
+  }
+  function handleSubmit(event){
+    event.preventDefault();
+    const user = {username, password}
+    handleLogin(user)
+    setUsername("")
+    setPassword("")
+    navigate('/locations', {replace: true, state : {username: user.username}})
+  }
   return(
     <>
-      <form>
-        <label><input type="text" placeholder="Enter your username"  required/></label>
-        <label><input type="text" placeholder="Password" required/></label>
+      <form onSubmit={handleSubmit}>
+        <label><input type="text" placeholder="Enter your username" value={username} onChange={(event) => setUsername(event.target.value)} required/></label>
+        <label><input type="text" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)}  required/></label>
         <button type="submit" id="login">Log in</button>
       </form>
-      <span>Don't have an account <a id="sign-up-link">signup!</a></span>
-      
     </>
   )
 }

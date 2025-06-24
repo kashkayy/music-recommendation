@@ -3,14 +3,14 @@ POST http://localhost:5200/auth/signup
 Content-Type: application/json
 
 {
- "username":"Tester",
- "password":"chopsticks"
+ "username":"emmaaa",
+ "password":"isgoated"
 } 
 ###
 POST http://localhost:5200/auth/login
 Content-Type: application/json
 
 {
- "username":"howlan",
- "password":"haaland"
+ "username":"Tester",
+ "password":"chopsticks"
 } 
