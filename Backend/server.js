@@ -1,7 +1,7 @@
 import express from "express"
 import authRoutes from './routes/authRoutes.js'
 const app = express()
-const PORT = process.env.PORT || 5500;
+const PORT = process.env.PORT || 5200;
 app.use(express.json())
 app.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');

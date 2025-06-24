@@ -1,13 +1,13 @@
 import express from 'express'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 import {createUser} from '../PrismaClient.js'
 const router = express.Router()
-router.post('/signup', (req, res) => {
+router.post('/signup', async (req, res) => {
   const {username, password} = req.body
-  const hashedPassword = bcrypt.hashSync(password, 10)
-  console.log(hashedPassword)
-  console.log(username, password)
+  try {
+      const newUser = await createUser(username, password);
+      res.status(201).json({ message: "User created successfully", user: newUser });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create user", error: error.message });
+    }
 })
-router.post('/login', (req, res) => {})
 export default router
