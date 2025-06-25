@@ -5,8 +5,17 @@ export default function SignUp(){
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  function handleCreateUser(newUser){
-    register(newUser);
+  async function handleCreateUser(newUser){
+    try{
+      const response = await register(newUser);
+      if(response.success){
+        navigate('/locations', {state : {username: newUser.username}})
+      }else{
+        alert("Username already exists")
+      }
+        }catch(err){
+          alert("Sign up failed")
+        }
   }
   function handleSubmit(event){
     event.preventDefault();
@@ -14,7 +23,6 @@ export default function SignUp(){
     handleCreateUser(user)
     setUsername("")
     setPassword("")
-    navigate('/auth/login', {replace: true})
   }
   return(
     <>
