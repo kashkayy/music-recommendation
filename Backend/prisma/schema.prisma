@@ -19,28 +19,25 @@ model User{
   email                  String?             @unique
   passwordhash           String          
   createdAt              DateTime            @default(now())
-  playlists              Playlist[]
+  savedSongs             SavedSong[]
 }
 model Location{
   id                     Int                 @id @default(autoincrement()) 
   name                   String
-  songs                  Song[]
+  lat                    Float
+  lng                    Float
+  countrycode            String
+  savedSongs             SavedSong[]                  
 }
-model Song{
-  id                     Int
+model SavedSong{
+  id                     Int                 @id @default(autoincrement()) 
   title                  String
   artist                 String
-  location               Location            @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  locationId             Int
   coverUrl               String
-  savedBy                Playlist[]
-}
-model Playlist{
-  id                     Int                 @id @default(autoincrement()) 
-  user                   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                 Int    
-  songs                  Song[]              @relation(fields: [songId], references: [id], onDelete: Cascade)
-  songId                 Int
+  user                   User                @relation(fields: [userId], references: [id])
+  userId                 Int
+  location               Location            @relation(fields: [locationId], references: [id])
+  locationId             Int
   createdAt              DateTime            @default(now())
-  updatedAt              DateTime            @updatedAt
 }
+

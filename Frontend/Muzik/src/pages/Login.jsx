@@ -5,8 +5,17 @@ export default function Login(){
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  function handleLogin(user){
-    login(user);
+  async function handleLogin(user){
+    try{
+      const response = await login(user);
+      if(response.success){
+        navigate('/locations', {replace: true, state : {username: user.username}})
+      }else{
+        alert("Login failed")
+      }
+    }catch(err){
+      alert("Invalid username or password")
+    }
   }
   function handleSubmit(event){
     event.preventDefault();
@@ -14,7 +23,6 @@ export default function Login(){
     handleLogin(user)
     setUsername("")
     setPassword("")
-    navigate('/locations', {replace: true, state : {username: user.username}})
   }
   return(
     <>
