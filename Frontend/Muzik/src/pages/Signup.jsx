@@ -8,7 +8,7 @@ export default function SignUp(){
   async function handleCreateUser(newUser){
     try{
       const response = await register(newUser);
-      if(response.success){
+      if(response.ok){
         navigate('/locations', {state : {username: newUser.username}})
       }else{
         alert("Username already exists")

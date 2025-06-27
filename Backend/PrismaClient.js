@@ -33,7 +33,7 @@ export async function login(username, password){
     if (!getUser){
       return
     }
-    const passwordIsCorrect = bcrypt.compareSync(password, getUser.passwordhash)
+    const passwordIsCorrect = await bcrypt.compare(password, getUser.passwordhash)
     if (!passwordIsCorrect){
       return
     }
@@ -44,9 +44,5 @@ export async function login(username, password){
 }
 export async function getLocations(){
   return await prisma.location.findMany({
-      include: {
-        savedSongs: true
-    }
   });
 }
-export default prisma
