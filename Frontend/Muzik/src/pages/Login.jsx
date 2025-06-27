@@ -8,7 +8,7 @@ export default function Login(){
   async function handleLogin(user){
     try{
       const response = await login(user);
-      if(response.success){
+      if(response.ok){
         navigate('/locations', {replace: true, state : {username: user.username}})
       }else{
         alert("Login failed")
