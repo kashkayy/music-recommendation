@@ -19,30 +19,27 @@ model User{
   email                  String?             @unique
   passwordhash           String          
   createdAt              DateTime            @default(now())
-  favorite               Favorite            @unique
+  savedSongs             SavedSong[]
   role                   String              @default("user")
-}
-model Favorite{
-  id                     Int                 @id @default(autoincrement())
-  title                  String
-  user                   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                 Int                 @unique
-  songs                  savedSong[]               
 }
 model Song{
   id                     Int                 @id @default(autoincrement()) 
   title                  String
   artist                 String
   coverUrl               String 
-  ranking                SongRanking
-  savedBy                savedSong[]
+  ranking                SongRanking[]
+  savedBy                SavedSong[]
 }
-model savedSong{
-  favorite               Favorite            @relation(fields: [favoriteId], references: [id])
-  favoriteId             Int                 
+model SavedSong{    
+  id                     Int                 @id @default(autoincrement())
   song                   Song                @relation(fields: [songId], references: [id]) 
   songId                 Int
-  id                     Int                 @id @default(autoincrement())
+  user                   User                @relation(fields: [userId], references: [id]) 
+  userId                 Int
+  lat                    Float
+  lng                    Float
+
+  @@index([lat, lng])
 }
 model SongRanking{
   id                     Int                 @id @default(autoincrement())
@@ -50,7 +47,7 @@ model SongRanking{
   lng                    Float
   song                   Song                @relation(fields: [songId], references: [id]) 
   songId                 Int                
-  rank                   Int                 @default(1)
+  score                  Int                 @default(0)
 
   @@index([lat, lng])
 }

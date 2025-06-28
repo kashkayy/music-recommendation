@@ -1,7 +1,5 @@
 import express from "express"
 import authRoutes from './routes/authRoutes.js'
-import locationRoutes from './routes/locationRoutes.js'
-import songRoutes from './routes/SpotifyRoutes.js'
 const app = express()
 const PORT = 5200;
 app.use(express.json())
@@ -12,6 +10,4 @@ app.use((req, res, next) => {
       next();
     });
 app.use('/auth', authRoutes)
-app.use('/locations', locationRoutes)
-locationRoutes.use('/', songRoutes)
 app.listen(PORT, console.log(`Successful connection to ${PORT}`))
