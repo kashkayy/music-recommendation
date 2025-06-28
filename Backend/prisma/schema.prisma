@@ -19,39 +19,40 @@ model User{
   email                  String?             @unique
   passwordhash           String          
   createdAt              DateTime            @default(now())
-  playlist               Playlist?
+  favorite               Favorite            @unique
   role                   String              @default("user")
 }
-model Playlist{
+model Favorite{
   id                     Int                 @id @default(autoincrement())
   title                  String
   user                   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                 Int
-  songs                  SongsInPlaylists[]     
-  createdAt              DateTime            @default(now())           
-}
-model Location{
-  id                     Int                 @id @default(autoincrement()) 
-  name                   String
-  lat                    Float
-  lng                    Float
-  spotifyId              String               
+  userId                 Int                 @unique
+  songs                  savedSong[]               
 }
 model Song{
   id                     Int                 @id @default(autoincrement()) 
   title                  String
   artist                 String
   coverUrl               String 
-  ranking                Int
-  playlists              SongsInPlaylists[]
+  ranking                SongRanking
+  savedBy                savedSong[]
 }
-model SongsInPlaylists{
-  playlist               Playlist            @relation(fields: [playlistId], references: [id])
-  playlistId             Int                 
+model savedSong{
+  favorite               Favorite            @relation(fields: [favoriteId], references: [id])
+  favoriteId             Int                 
   song                   Song                @relation(fields: [songId], references: [id]) 
   songId                 Int
-  
-  @@id([playlistId, songId])      
+  id                     Int                 @id @default(autoincrement())
+}
+model SongRanking{
+  id                     Int                 @id @default(autoincrement())
+  lat                    Float
+  lng                    Float
+  song                   Song                @relation(fields: [songId], references: [id]) 
+  songId                 Int                
+  rank                   Int                 @default(1)
+
+  @@index([lat, lng])
 }
 
 
