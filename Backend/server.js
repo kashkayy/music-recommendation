@@ -1,5 +1,6 @@
 import express from "express"
 import authRoutes from './routes/authRoutes.js'
+import trendingRoutes from './routes/trendingSongRoutes.js'
 const app = express()
 const PORT = 5200;
 app.use(express.json())
@@ -10,4 +11,5 @@ app.use((req, res, next) => {
       next();
     });
 app.use('/auth', authRoutes)
+authRoutes.use('/login/trending', trendingRoutes)
 app.listen(PORT, console.log(`Successful connection to ${PORT}`))

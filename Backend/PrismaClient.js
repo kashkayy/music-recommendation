@@ -39,3 +39,13 @@ export async function login(username, password){
     console.log("Error logging in: ", err)
   }
 }
+export async function getTrendingSongs(lat,lng){
+  return prisma.songRanking.findMany({
+    where:{
+      lat: {gte: lat - 1, lte: lat + 1},
+      lng: {gte: lng - 1, lte: lng + 1}
+    },
+    include: {song: true},
+    orderBy: {score: 'desc'},
+  })
+}
