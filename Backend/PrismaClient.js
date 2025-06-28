@@ -46,3 +46,10 @@ export async function getLocations(){
   return await prisma.location.findMany({
   });
 }
+export async function getSpotifyId(spotifyId){
+  return await prisma.location.findUnique({
+    where:{
+      spotifyId: spotifyId
+    }
+  })
+}

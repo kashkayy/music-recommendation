@@ -11,10 +11,10 @@ export default function Login(){
       if(response.ok){
         navigate('/locations', {replace: true, state : {username: user.username}})
       }else{
-        alert("Login failed")
+        alert("Incorrect username or password")
       }
     }catch(err){
-      alert("Invalid username or password")
+      alert("Login failed. Try again")
     }
   }
   function handleSubmit(event){

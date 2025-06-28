@@ -9,7 +9,7 @@ export default function SignUp(){
     try{
       const response = await register(newUser);
       if(response.ok){
-        navigate('/locations', {state : {username: newUser.username}})
+        navigate('/auth/login', {replace: true, state : {username: newUser.username}})
       }else{
         alert("Username already exists")
       }
