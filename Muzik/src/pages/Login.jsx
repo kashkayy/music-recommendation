@@ -26,10 +26,11 @@ export default function Login(){
   }
   return(
     <>
-      <form onSubmit={handleSubmit}>
+      <h1>Sound Map 🎵</h1>
+      <form onSubmit={handleSubmit} id="log-in-form">
         <label><input type="text" placeholder="Enter your username" value={username} onChange={(event) => setUsername(event.target.value)} required/></label>
         <label><input type="text" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)}  required/></label>
-        <button type="submit" id="login">Log in</button>
+        <button type="submit">Log in</button>
       </form>
     </>
   )

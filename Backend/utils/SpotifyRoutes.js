@@ -1,7 +1,7 @@
 import { getSpotifyToken } from './SpotifyToken.js';
  export async function fetchSeedSongs(playlistId){
     const token = await getSpotifyToken();
-    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=30`, {
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=0&limit=30`, {
       method: "GET",
       headers: {
         'Authorization': 'Bearer ' + token
