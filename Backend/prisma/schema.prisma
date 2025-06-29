@@ -20,24 +20,39 @@ model User{
   passwordhash           String          
   createdAt              DateTime            @default(now())
   savedSongs             SavedSong[]
+  role                   String              @default("user")
 }
-model Location{
-  id                     Int                 @id @default(autoincrement()) 
-  name                   String
-  lat                    Float
-  lng                    Float
-  countrycode            String
-  savedSongs             SavedSong[]                  
-}
-model SavedSong{
+model Song{
   id                     Int                 @id @default(autoincrement()) 
   title                  String
   artist                 String
-  coverUrl               String
-  user                   User                @relation(fields: [userId], references: [id])
-  userId                 Int
-  location               Location            @relation(fields: [locationId], references: [id])
-  locationId             Int
-  createdAt              DateTime            @default(now())
+  coverUrl               String 
+  ranking                SongRanking[]
+  savedBy                SavedSong[]
 }
+model SavedSong{    
+  id                     Int                 @id @default(autoincrement())
+  song                   Song                @relation(fields: [songId], references: [id]) 
+  songId                 Int
+  user                   User                @relation(fields: [userId], references: [id]) 
+  userId                 Int
+  lat                    Float
+  lng                    Float
+
+  @@index([lat, lng])
+}
+model SongRanking{
+  id                     Int                 @id @default(autoincrement())
+  lat                    Float
+  lng                    Float
+  song                   Song                @relation(fields: [songId], references: [id]) 
+  songId                 Int                
+  score                  Int                 @default(0)
+
+  @@index([lat, lng])
+}
+
+
+
+
 
