@@ -1,5 +1,4 @@
-import { PrismaClient } from "./generated/prisma/index.js";
-const prisma = new PrismaClient();
+import prisma from './prisma/seed.js';
 import bcrypt from 'bcrypt'
 export async function createUser(username, password) {
   const existingUser = await prisma.user.findUnique({
@@ -48,4 +47,30 @@ export async function getTrendingSongs(lat,lng){
     include: {song: true},
     orderBy: {score: 'desc'},
   })
+}
+export async function getSavedSongsForUser(userId) {
+  try {
+    return await prisma.savedSong.findMany({
+      where: {userId: userId},
+      include: {
+        song: true
+      }
+    })
+  } catch (err) {
+    console.log("Error fetching saved songs for this user", err)
+  }
+}
+export async function createSavedSong(userId, songId, userLat, userLng){
+  try{
+    return await prisma.savedSong.create({
+      data:{
+        songId: songId,
+        userId: userId,
+        lat: userLat,
+        lng: userLng,
+      }
+    })
+  }catch(err){
+    console.log("Error adding song to list", err)
+  }
 }

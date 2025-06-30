@@ -71,7 +71,7 @@ label{
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   width: 500px;
-  height: 30rem;
+  height: 40rem;
   position: relative;
 }
 .close-btn {
@@ -85,7 +85,7 @@ label{
 .modal-content {
   padding: 1rem;
   overflow: scroll;
-  height: 20rem;
+  height: 33rem;
 }
 h2 {
   margin-top: 0;
