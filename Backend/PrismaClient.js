@@ -1,9 +1,5 @@
-import { PrismaClient } from "./generated/prisma/index.js";
-const prisma = new PrismaClient();
+import prisma from './prisma/seed.js';
 import bcrypt from 'bcrypt'
-async function main(){
-  //mock data
-}
 export async function createUser(username, password) {
   const existingUser = await prisma.user.findUnique({
     where: { username },
@@ -42,7 +38,39 @@ export async function login(username, password){
     console.log("Error logging in: ", err)
   }
 }
-export async function getLocations(){
-  return await prisma.location.findMany({
-  });
+export async function getTrendingSongs(lat,lng){
+  return prisma.songRanking.findMany({
+    where:{
+      lat: {gte: lat - 1, lte: lat + 1},
+      lng: {gte: lng - 1, lte: lng + 1}
+    },
+    include: {song: true},
+    orderBy: {score: 'desc'},
+  })
+}
+export async function getSavedSongsForUser(userId) {
+  try {
+    return await prisma.savedSong.findMany({
+      where: {userId: userId},
+      include: {
+        song: true
+      }
+    })
+  } catch (err) {
+    console.log("Error fetching saved songs for this user", err)
+  }
+}
+export async function createSavedSong(userId, songId, userLat, userLng){
+  try{
+    return await prisma.savedSong.create({
+      data:{
+        songId: songId,
+        userId: userId,
+        lat: userLat,
+        lng: userLng,
+      }
+    })
+  }catch(err){
+    console.log("Error adding song to list", err)
+  }
 }

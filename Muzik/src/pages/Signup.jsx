@@ -9,7 +9,7 @@ export default function SignUp(){
     try{
       const response = await register(newUser);
       if(response.ok){
-        navigate('/locations', {state : {username: newUser.username}})
+        navigate('/auth/login', {state : {username: newUser.username}})
       }else{
         alert("Username already exists")
       }
@@ -26,10 +26,11 @@ export default function SignUp(){
   }
   return(
     <>
+      <h1>Sound Map 🎵</h1>
       <form id="sign-up-form" onSubmit={handleSubmit}>
         <label><input type="text" placeholder="Create a username" value={username} onChange={(event) => setUsername(event.target.value)} required/></label>
         <label><input type="text" placeholder="Create a password" value={password} onChange={(event) => setPassword(event.target.value)} required/></label>
-        <button type="submit" id="sign-up">Sign up!</button>
+        <button type="submit">Sign up!</button>
       </form>
       <span>Already have an account? <Link to={`/auth/login`}>log in!</Link></span>
     </>
