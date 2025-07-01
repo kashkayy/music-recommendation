@@ -101,7 +101,8 @@ label{
 }
 h2 {
   margin-top: 0;
-  margin-bottom: 3rem;
+  margin-bottom: 0.5rem;
+  font-size: 4rem;
 }
 .song-info{
     display: flex;
@@ -129,4 +130,30 @@ h2 {
 }
 .artist-name{
   font-size: 1.5rem;
+}
+.favorite-songs{
+  display: flex;
+  flex-wrap: wrap;
+  padding: 2.8rem;
+  justify-content: center;
+  overflow: scroll;
+}
+.song-card{
+  position: relative;
+  margin: 20px;
+  display: flex;
+  height: 24rem;
+  width: 17rem;
+  align-items: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: solid #888;
+  border-radius: 1.4rem;
+  cursor: pointer;
+}
+.card-image{
+  border-radius: 1.35rem;
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
 }

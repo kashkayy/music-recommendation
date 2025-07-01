@@ -12,7 +12,7 @@ export async function login(user){
   localStorage.setItem("token", data.token)
   return data
 }
-const token = localStorage.getItem("token")
+export const token = localStorage.getItem("token")
 export async function getTrendingSongs(lat,lng){
   const res = await fetch(`${BASE_URL}/auth/login/trending?lat=${lat}&lng=${lng}`)
   const data = await res.json()
@@ -20,7 +20,18 @@ export async function getTrendingSongs(lat,lng){
 }
 export async function getSearchResults(query){
   const encodedQuery = encodeURIComponent(query)
-  const res = await fetch(`${BASE_URL}/auth/search?query=${encodedQuery}`)
+  const res = await fetch(`${BASE_URL}/auth/search?query=${encodedQuery}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+  }, })
+  const data = await res.json()
+  return data
+}
+export async function getUserFavorites(){
+  const res = await fetch(`${BASE_URL}/auth/favorites`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+  }, })
   const data = await res.json()
   return data
 }
