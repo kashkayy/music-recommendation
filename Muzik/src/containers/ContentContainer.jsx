@@ -1,4 +1,3 @@
-import { useState } from "react"
 import SongsContainer from "./SongsContainer"
 import MapPage from "./Map"
 export default function ContentContainer({currentSection}) {

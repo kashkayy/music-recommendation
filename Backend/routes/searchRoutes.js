@@ -1,8 +1,8 @@
 import express from 'express'
-import { searchResults } from '../PrismaClient.js'
+import { searchResults } from '../controllers.js'
 import { authenticateToken } from '../middleware/authMiddleware.js'
 const router = express.Router()
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try{
     const {query} = req.query
     const results = await searchResults(query)

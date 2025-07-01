@@ -3,12 +3,12 @@ import { useLocation } from "react-router-dom"
 import {GoogleMap, useLoadScript} from "@react-google-maps/api"
 import MarkerModal from "../components/LocationModal"
   const center = {
-    lat: 0,
-    lng: 0
+    lat: 20.0,
+    lng: 0.0
   }
   const containerStyle = {
-    width: '1000px',
-    height: '1000px'
+    width: '100%',
+    height: '80vh'
   }
   const options = {
   restriction: {
@@ -31,8 +31,8 @@ export default function MapPage(){
   })
   if(!isLoaded) return <span>Loading...</span>
   function handleClick(event){
-    setLat(event.latLng.lat())  
-    setLng(event.latLng.lng())  
+    setLat(event.latLng.lat())
+    setLng(event.latLng.lng())
     setShowModal(true)};
   function onCloseModal(){
     setShowModal(false)
@@ -42,7 +42,7 @@ export default function MapPage(){
   return(
     <>
       <h3>Welcome {location.state.username}</h3>
-      <GoogleMap center={center} zoom={2} maxzoom={10} mapContainerStyle={containerStyle} options={options} onClick={handleClick}>
+      <GoogleMap center={center} zoom={3} mapContainerStyle={containerStyle} options={options} onClick={handleClick}>
         {showModal && <MarkerModal lat={lat} lng={lng} onClose={onCloseModal}/>}
       </GoogleMap>
     </>
