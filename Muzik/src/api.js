@@ -18,3 +18,9 @@ export async function getTrendingSongs(lat,lng){
   const data = await res.json()
   return data
 }
+export async function getSearchResults(query){
+  const encodedQuery = encodeURIComponent(query)
+  const res = await fetch(`${BASE_URL}/auth/search?query=${encodedQuery}`)
+  const data = await res.json()
+  return data
+}

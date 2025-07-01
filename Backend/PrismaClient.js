@@ -1,5 +1,6 @@
 import prisma from './prisma/seed.js';
 import bcrypt from 'bcrypt'
+import { fetchSearchResults } from './utils/SpotifyRoutes.js';
 export async function createUser(username, password) {
   const existingUser = await prisma.user.findUnique({
     where: { username },
@@ -48,29 +49,33 @@ export async function getTrendingSongs(lat,lng){
     orderBy: {score: 'desc'},
   })
 }
-export async function getSavedSongsForUser(userId) {
-  try {
-    return await prisma.savedSong.findMany({
-      where: {userId: userId},
-      include: {
-        song: true
-      }
-    })
-  } catch (err) {
-    console.log("Error fetching saved songs for this user", err)
+  export async function getSavedSongsForUser(userId) {
+    try {
+      return await prisma.savedSong.findMany({
+        where: {userId: userId},
+        include: {
+          song: true
+        }
+      })
+    } catch (err) {
+      console.log("Error fetching saved songs for this user", err)
+    }
   }
+  export async function createSavedSong(userId, songId, userLat, userLng){
+    try{
+      return await prisma.savedSong.create({
+        data:{
+          songId: songId,
+          userId: userId,
+          lat: userLat,
+          lng: userLng,
+        }
+      })
+    }catch(err){
+      console.log("Error adding song to list", err)
+    }
 }
-export async function createSavedSong(userId, songId, userLat, userLng){
-  try{
-    return await prisma.savedSong.create({
-      data:{
-        songId: songId,
-        userId: userId,
-        lat: userLat,
-        lng: userLng,
-      }
-    })
-  }catch(err){
-    console.log("Error adding song to list", err)
-  }
+export async function searchResults(searchQuery){
+  const searchResults = fetchSearchResults(searchQuery)
+  return searchResults
 }
