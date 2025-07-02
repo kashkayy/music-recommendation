@@ -10,7 +10,7 @@ async function main() {
     create: {
       username: 'testuser1',
       passwordhash: bcrypt.hashSync('password123', 10),
-      role: 'user'
+      role: 'admin'
     }
   });
 
@@ -50,8 +50,8 @@ async function main() {
       data: {
         songId: createdSongs[i].id,
         userId: testUser1.id,
-        lat: defaultLat + (Math.random() * 0.2 - 0.1), 
-        lng: defaultLng + (Math.random() * 0.2 - 0.1) 
+        lat: defaultLat + (Math.random() * 0.2 - 0.1),
+        lng: defaultLng + (Math.random() * 0.2 - 0.1)
       }
     });
   }
@@ -60,8 +60,8 @@ async function main() {
       data: {
         songId: createdSongs[i].id,
         userId: testUser2.id,
-        lat: defaultLat + 1.0 + (Math.random() * 0.2 - 0.1), // Different location
-        lng: defaultLng + 1.0 + (Math.random() * 0.2 - 0.1)  // Different location
+        lat: defaultLat + 1.0 + (Math.random() * 0.2 - 0.1),
+        lng: defaultLng + 1.0 + (Math.random() * 0.2 - 0.1)
       }
     });
   }

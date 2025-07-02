@@ -174,3 +174,10 @@ label{
   font-size: 2rem;
   cursor: pointer;
 }
+#permission{
+  display: flex;
+  margin-top: 28rem;
+  justify-content: center;
+  color: red;
+  font-size: 5rem;
+}
