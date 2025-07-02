@@ -60,6 +60,7 @@ input[type="text"]{
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 1.5rem;
 }
 label{
   display: block;
@@ -99,10 +100,14 @@ label{
   overflow: scroll;
   height: 33rem;
 }
-h2 {
-  margin-top: 0;
+.songs-header{
+  margin-top: 2rem;
   margin-bottom: 0.5rem;
-  font-size: 4rem;
+  font-size: 3rem;
+}
+.results{
+  margin-top: 0;
+  margin-bottom: 3rem;
 }
 .song-info{
     display: flex;
@@ -136,6 +141,7 @@ h2 {
   flex-wrap: wrap;
   padding: 2.8rem;
   justify-content: center;
+  height: 50rem;
   overflow: scroll;
 }
 .song-card{
@@ -156,4 +162,15 @@ h2 {
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
+}
+.favorite-action{
+  font-size: 3rem;
+  cursor: pointer;
+}
+.delete-action{
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 2rem;
+  cursor: pointer;
 }

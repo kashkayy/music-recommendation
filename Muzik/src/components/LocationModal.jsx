@@ -14,7 +14,7 @@ export default function MarkerModal({lat, lng, onClose}){
             <div className="modal-content">
               {songs.map(({song}, index) => (
                   <div className="song-info" key={index}>
-                    <img src={song.coverUrl} alt="song preview Image" className="song-img"/>           
+                    <img src={song.coverUrl} alt="song preview Image" className="song-img"/>
                     <div className="song-details">
                       <p className="song-name">{song.title}</p>
                       <p className="artist-name">{song.artist}</p>
