@@ -13,6 +13,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+enum Role{
+  admin
+  user
+}
 model User{
   id                     Int                 @id @default(autoincrement())
   username               String              @unique
@@ -20,7 +24,7 @@ model User{
   passwordhash           String
   createdAt              DateTime            @default(now())
   savedSongs             SavedSong[]
-  role                   String              @default("user")
+  role                   Role                @default(user)
 }
 model Song{
   id                     Int                 @id @default(autoincrement())

@@ -120,3 +120,36 @@ export async function deleteSavedSong(songId, userId){
     console.log("Error deleting song from favorites", err)
   }
 }
+export async function getAllUsers(userRole){
+  if(userRole !== "admin") return
+  try{
+    return await prisma.user.findMany()
+  }catch(err){
+    console.log("Error fetching all users", err)
+  }
+}
+export async function getUserById(userId){
+  try{
+    return await prisma.user.findUnique({
+      where:{ id: userId}
+    })
+  }catch(err){
+    console.log("Error fetching user by id", err)
+  }
+}
+export async function getAllSongs(){
+  try{
+    return await prisma.song.findMany()
+  }catch(err){
+    console.log("Error fetching all songs", err)
+  }
+}
+export async function getSongById(songId){
+  try{
+    return await prisma.song.findUnique({
+      where:{ id: songId}
+    })
+  }catch(err){
+    console.log("Error fetching song by id", err)
+  }
+}

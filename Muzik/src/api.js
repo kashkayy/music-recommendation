@@ -12,13 +12,16 @@ export async function login(user){
   localStorage.setItem("token", data.token)
   return data
 }
-export const token = localStorage.getItem("token")
+export function getToken(){
+  return localStorage.getItem("token")
+}
 export async function getTrendingSongs(lat,lng){
   const res = await fetch(`${BASE_URL}/auth/login/trending?lat=${lat}&lng=${lng}`)
   const data = await res.json()
   return data
 }
 export async function getSearchResults(query){
+  const token = getToken()
   const encodedQuery = encodeURIComponent(query)
   const res = await fetch(`${BASE_URL}/auth/search?query=${encodedQuery}`, {
     headers: {
@@ -28,6 +31,7 @@ export async function getSearchResults(query){
   return data
 }
 export async function getUserFavorites(){
+  const token = getToken()
   const res = await fetch(`${BASE_URL}/auth/favorites`, {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -36,6 +40,7 @@ export async function getUserFavorites(){
   return data
 }
 export async function deleteSavedSong(songId){
+  const token = getToken()
   const res = await fetch(`${BASE_URL}/auth/favorites/delete?songId=${songId}`, {method:"DELETE",
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -44,11 +49,30 @@ export async function deleteSavedSong(songId){
     return data
 }
 export async function saveSong(songId, lat, lng, title, artist, coverUrl){
+  const token = getToken()
   const res = await fetch(`${BASE_URL}/auth/favorites/save`, {method:"POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization":"Bearer "+ token
+      "Authorization": `Bearer ${token}`
     }, body: JSON.stringify({songId, lat, lng, title, artist, coverUrl})})
   const data= await res.json()
+  return data
+}
+export async function isAdmin(){
+  const token = getToken()
+  const res = await fetch(`${BASE_URL}/auth/admin`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    }, })
+  const data = await res.json()
+  return data.isAdmin
+}
+export async function getAllUsers(){
+  const token = getToken()
+  const res = await fetch(`${BASE_URL}/auth/admin/users`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    }, })
+  const data = await res.json()
   return data
 }
