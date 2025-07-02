@@ -1,5 +1,5 @@
 import express from 'express'
-import {createSavedSong, getSavedSongsForUser } from '../controllers.js'
+import {createSavedSong, getSavedSongsForUser, deleteSavedSong } from '../controllers.js'
 import { authenticateToken } from '../middleware/authMiddleware.js'
 const router = express.Router()
 router.get('/', authenticateToken, async (req, res) => {
@@ -10,17 +10,29 @@ router.get('/', authenticateToken, async (req, res) => {
     res.status(500).json({message: "Error getting saved songs", ok:false})
   }
 })
-router.post('/',authenticateToken, async (req, res) => {
-  const {songId, lat, lng} = req.body
+router.post('/save',authenticateToken, async (req, res) => {
+  const {songId, title, artist, coverUrl, lat, lng} = req.body
+  const userId = req.user.id
   if(!lat || !lng){
-    return res.json({mesage: "Allow Sound Map access your location"})
+    return res.json({message: "Allow Sound Map access your location"})
   }
   try{
-    await createSavedSong(req.user.id, songId, lat, lng)
+    await createSavedSong(userId, songId, title, artist, coverUrl, lat, lng)
     const updatedlist = await getSavedSongsForUser(req.user.id)
     res.status(201).json({message: "Successfully saved this song", ok:true, results: updatedlist})
   }catch(err){
     res.status(500).json({message: "Error saving song", ok:false})
+  }
+})
+router.delete('/delete',authenticateToken, async (req, res) => {
+  try{
+    const {songId} = req.query
+    const userId = req.user.id
+    await deleteSavedSong(songId, userId)
+    const updatedlist = await getSavedSongsForUser(req.user.id)
+    res.status(200).json({message: "Successfully deleted this song", ok:true, results: updatedlist})
+  }catch(err){
+    res.status(500).json({message: "Error deleting song", ok:false})
   }
 })
 export default router

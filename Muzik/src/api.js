@@ -35,3 +35,20 @@ export async function getUserFavorites(){
   const data = await res.json()
   return data
 }
+export async function deleteSavedSong(songId){
+  const res = await fetch(`${BASE_URL}/auth/favorites/delete?songId=${songId}`, {method:"DELETE",
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    }, })
+    const data = await res.json()
+    return data
+}
+export async function saveSong(songId, lat, lng, title, artist, coverUrl){
+  const res = await fetch(`${BASE_URL}/auth/favorites/save`, {method:"POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization":"Bearer "+ token
+    }, body: JSON.stringify({songId, lat, lng, title, artist, coverUrl})})
+  const data= await res.json()
+  return data
+}

@@ -24,6 +24,7 @@ import { getSpotifyToken } from './SpotifyToken.js';
     });
     const data = await response.json()
     return data.tracks.items.map((item) => ({
+       id: item.id ,
        title: item.name,
        artist: item.artists[0].name,
        coverUrl: item.album.images[0].url,
