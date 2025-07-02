@@ -9,7 +9,7 @@ export default function Login(){
     try{
       const response = await login(user);
       if(response.ok){
-        navigate('/locations', {replace: true, state : {username: user.username}})
+        navigate('/home', {replace: true, state : {username: user.username}})
       }else{
         alert("Incorrect username or password")
       }

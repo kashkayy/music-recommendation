@@ -52,6 +52,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE INDEX "SavedSong_lat_lng_idx" ON "SavedSong"("lat", "lng");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "SavedSong_songId_userId_key" ON "SavedSong"("songId", "userId");
+
+-- CreateIndex
 CREATE INDEX "SongRanking_lat_lng_idx" ON "SongRanking"("lat", "lng");
 
 -- AddForeignKey

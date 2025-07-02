@@ -1,5 +1,5 @@
 import express from 'express'
-import {getTrendingSongs} from '../PrismaClient.js'
+import {getTrendingSongs} from '../controllers.js'
 import { defaultLat, defaultLng } from '../prisma/seed.js'
 const router = express.Router()
 router.get('/', async (req,res) => {

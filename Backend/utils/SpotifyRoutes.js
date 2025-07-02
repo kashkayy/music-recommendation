@@ -14,3 +14,19 @@ import { getSpotifyToken } from './SpotifyToken.js';
        coverUrl: item.track.album.images[0].url,
        }))
   }
+ export async function fetchSearchResults(query){
+    const token = await getSpotifyToken();
+    const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=10`, {
+      method: "GET",
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+    });
+    const data = await response.json()
+    return data.tracks.items.map((item) => ({
+       id: item.id ,
+       title: item.name,
+       artist: item.artists[0].name,
+       coverUrl: item.album.images[0].url,
+       }))
+  }
