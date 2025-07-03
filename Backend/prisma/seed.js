@@ -37,7 +37,7 @@ async function main() {
         },
         lat: defaultLat,
         lng: defaultLng,
-        score: Math.floor(Math.random() * 100) + 1,
+        score: 1,
       },
       include: {
         song: true
@@ -50,8 +50,8 @@ async function main() {
       data: {
         songId: createdSongs[i].id,
         userId: testUser1.id,
-        lat: defaultLat + (Math.random() * 0.2 - 0.1),
-        lng: defaultLng + (Math.random() * 0.2 - 0.1)
+        lat: defaultLat + (Math.random() * 5),
+        lng: defaultLng + (Math.random() * 5)
       }
     });
   }
@@ -60,8 +60,8 @@ async function main() {
       data: {
         songId: createdSongs[i].id,
         userId: testUser2.id,
-        lat: defaultLat + 1.0 + (Math.random() * 0.2 - 0.1),
-        lng: defaultLng + 1.0 + (Math.random() * 0.2 - 0.1)
+        lat: defaultLat + 1.0 + (Math.random() * 5),
+        lng: defaultLng + 1.0 + (Math.random() * 5)
       }
     });
   }

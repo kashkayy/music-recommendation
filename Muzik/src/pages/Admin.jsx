@@ -1,4 +1,4 @@
-import AdminContent from "../components/AdminContent"
+import AdminContent from "../containers/AdminContent"
 import { isAdmin } from "../api"
 import { useEffect, useState } from "react"
 export default function Admin() {

@@ -1,6 +1,6 @@
 import SongsContainer from "./SongsContainer"
 import MapPage from "./Map"
-import Admin from "./Admin"
+import Admin from "../pages/Admin"
 export default function ContentContainer({currentSection, userLat, userLng}) {
     return(
         <>
