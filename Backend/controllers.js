@@ -42,20 +42,19 @@ export async function login(username, password){
 export async function getTrendingSongs(lat,lng){
   return prisma.songRanking.findMany({
     where:{
-      lat: {gte: lat - 1, lte: lat + 1},
-      lng: {gte: lng - 1, lte: lng + 1}
+      lat: {gte: lat - 3, lte: lat + 3},
+      lng: {gte: lng - 3, lte: lng + 3}
     },
     include: {song: true},
     orderBy: {score: 'desc'},
+    take: 30,
   })
 }
 export async function getSavedSongsForUser(userId) {
     try {
       return await prisma.savedSong.findMany({
         where: {userId: userId},
-        include: {
-          song: true
-        }
+        include: {song: true}
       })
     } catch (err) {
       console.log("Error fetching saved songs for this user", err)
@@ -86,16 +85,50 @@ export async function findOrCreateSong(title, artist, coverUrl) {
 export async function createSavedSong(userId, songId, title, artist, coverUrl, userLat, userLng){
   try{
     const song = await findOrCreateSong(title, artist, coverUrl);
-    return await prisma.savedSong.create({
+    const savedSong = await prisma.savedSong.create({
       data:{
         songId: song.id || songId,
         userId: userId,
         lat: userLat,
         lng: userLng,
-      }
+      },
     });
+    await findOrCreateSongRanking(song.id || songId, userLat, userLng);
+    return savedSong
   }catch(err){
     console.log("Error adding song to list", err);
+  }
+}
+export async function findOrCreateSongRanking(songId, lat, lng) {
+  try {
+    let songRanking = await prisma.songRanking.findFirst({
+      where: {
+        songId: songId,
+        lat: {gte: lat - 1, lte: lat + 1},
+        lng: {gte: lng - 1, lte: lng + 1}
+      },
+    })
+    if (!songRanking) {
+      songRanking = await prisma.songRanking.create({
+        data: {
+          songId: songId,
+          score: 1,
+          lat: lat,
+          lng: lng,
+        }
+      });
+    }else{
+      songRanking = await prisma.songRanking.update({
+        where: {
+          id: songRanking.id
+        }, data: {
+          score: songRanking.score + 1
+        }
+      })
+  }
+    return songRanking;
+  }catch (err) {
+    console.log("Error finding or creating song ranking", err);
   }
 }
 export async function searchResults(searchQuery){
@@ -106,9 +139,16 @@ export async function searchResults(searchQuery){
     console.log("Error fetching search results", err)
   }
 }
-export async function deleteSavedSong(songId, userId){
+export async function deleteSavedSong(songId, userId, lat, lng){
   try{
-    return await prisma.savedSong.delete({
+    let songRanking = await prisma.songRanking.findFirst({
+      where: {
+        songId: Number(songId),
+        lat: {gte: lat - 1, lte: lat + 1},
+        lng: {gte: lng - 1, lte: lng + 1}
+      },
+    })
+    const results = await prisma.savedSong.delete({
       where:{
         songId_userId:{
           songId: Number(songId),
@@ -116,6 +156,14 @@ export async function deleteSavedSong(songId, userId){
         }
       }
     })
+    songRanking = await prisma.songRanking.update({
+      where:{
+        id: songRanking.id
+      }, data: {
+        score: songRanking.score - 1
+      }
+    })
+    return results
   }catch(err){
     console.log("Error deleting song from favorites", err)
   }

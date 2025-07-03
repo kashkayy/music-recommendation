@@ -40,7 +40,7 @@ CREATE TABLE "SongRanking" (
     "lat" DOUBLE PRECISION NOT NULL,
     "lng" DOUBLE PRECISION NOT NULL,
     "songId" INTEGER NOT NULL,
-    "score" INTEGER NOT NULL DEFAULT 0,
+    "score" INTEGER NOT NULL,
 
     CONSTRAINT "SongRanking_pkey" PRIMARY KEY ("id")
 );

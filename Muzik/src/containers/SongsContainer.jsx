@@ -2,10 +2,12 @@ import SearchModal from "../components/SearchResultsModal"
 import { useEffect, useState } from "react"
 import { getUserFavorites, deleteSavedSong, saveSong } from "../api";
 import { IoRemoveCircleOutline } from "react-icons/io5";
+import loading from "../assets/loading.svg"
 export default function SongsContainer({userLat, userLng}) {
     const [favorites, setFavorites] = useState([]);
+    const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
-        getUserFavorites().then((data) => setFavorites(data.results))},[])
+        getUserFavorites().then((data) => setFavorites(data.results)).then(() => setIsLoaded(true))},[])
     const [showModal, setShowModal] = useState(false);
     const [query, setQuery] = useState("");
     function handleClick(event){
@@ -15,8 +17,8 @@ export default function SongsContainer({userLat, userLng}) {
     function handleHide(){
         setShowModal(false)
     }
-    function handleRemove(songId){
-        deleteSavedSong(songId).then(data => {
+    function handleRemove(songId, lat, lng){
+        deleteSavedSong(songId, lat, lng).then(data => {
             if (data.ok) {setFavorites(data.results)}
         });
     }
@@ -37,22 +39,21 @@ export default function SongsContainer({userLat, userLng}) {
             <div className="recommended-songs">
             </div>
         </div>
-        <div className="favorites-container"></div>
-            <h2 className="songs-header">Your favorites list</h2>
-            <div className="favorite-songs">
-                {favorites.map((favorite, index) => (
-                    <div className="song-card" key={index}>
-                        <img className="card-image" src={favorite.song.coverUrl}></img>
-                        <div className="card-info">
-                            <h3 className="card-song">{favorite.song.title}</h3>
-                            <p className="card-artist">{favorite.song.artist}</p>
-                        </div>
-                        <div className="action">
-                            <div><IoRemoveCircleOutline className="delete-action" onClick={() => handleRemove(favorite.songId)} title="Remove from favorites"/></div>
-                        </div>
+        <h2 className="songs-header">Your favorites list</h2>
+        {isLoaded? <div className="favorite-songs">
+            {favorites.map((favorite, index) => (
+                <div className="song-card" key={index}>
+                    <img className="card-image" src={favorite.song.coverUrl}></img>
+                    <div className="card-info">
+                        <h3 className="card-song">{favorite.song.title}</h3>
+                        <p className="card-artist">{favorite.song.artist}</p>
                     </div>
-                ))}
-            </div>
+                    <div className="action">
+                        <div><IoRemoveCircleOutline className="delete-action" onClick={() => handleRemove(favorite.songId, favorite.lat, favorite.lng)} title="Remove from favorites"/></div>
+                    </div>
+                </div>
+            ))}
+        </div> : <div className="loading-container"><img src={loading}></img></div>}
     </>
   )
 }

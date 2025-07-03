@@ -39,9 +39,9 @@ export async function getUserFavorites(){
   const data = await res.json()
   return data
 }
-export async function deleteSavedSong(songId){
+export async function deleteSavedSong(songId, lat, lng){
   const token = getToken()
-  const res = await fetch(`${BASE_URL}/auth/favorites/delete?songId=${songId}`, {method:"DELETE",
+  const res = await fetch(`${BASE_URL}/auth/favorites/delete?songId=${songId}&lat=${lat}&lng=${lng}`, {method:"DELETE",
     headers: {
       'Authorization': `Bearer ${token}`,
     }, })
