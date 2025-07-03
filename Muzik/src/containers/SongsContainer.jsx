@@ -6,6 +6,7 @@ import loading from "../assets/loading.svg"
 export default function SongsContainer({userLat, userLng}) {
     const [favorites, setFavorites] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
     useEffect(() => {
         getUserFavorites().then((data) => setFavorites(data.results)).then(() => setIsLoaded(true))},[])
     const [showModal, setShowModal] = useState(false);
@@ -17,15 +18,17 @@ export default function SongsContainer({userLat, userLng}) {
     function handleHide(){
         setShowModal(false)
     }
-    function handleRemove(songId, lat, lng){
-        deleteSavedSong(songId, lat, lng).then(data => {
+    async function handleRemove(songId, lat, lng){
+        await deleteSavedSong(songId, lat, lng).then(data => {
             if (data.ok) {setFavorites(data.results)}
         });
+        setIsSaved(false)
     }
-    function handleAddToFavorite(song, lat, lng){
-        saveSong(song.id, lat, lng, song.title, song.artist, song.coverUrl).then(data => {
+    async function handleAddToFavorite(song, lat, lng){
+        await saveSong(song.id, lat, lng, song.title, song.artist, song.coverUrl).then(data => {
             if (data.ok) {setFavorites(data.results)}
          })
+         setIsSaved(true)
     }
     return (
     <>
@@ -33,7 +36,7 @@ export default function SongsContainer({userLat, userLng}) {
             <input type="text" placeholder="Search for song" value={query} onChange={(event) => setQuery(event.target.value)} />
             <button onClick={handleClick}>Search</button>
         </div>
-        {showModal && <SearchModal query={query} onClose={handleHide} onSave={handleAddToFavorite} userLat={userLat} userLng={userLng}/>}
+        {showModal && <SearchModal isSaved={isSaved} query={query} onClose={handleHide} onSave={handleAddToFavorite} userLat={userLat} userLng={userLng}/>}
         <div className="recommended-container">
             <h3 className="songs-header">Recommended songs for you</h3>
             <div className="recommended-songs">
