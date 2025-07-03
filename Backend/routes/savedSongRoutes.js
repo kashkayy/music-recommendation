@@ -26,9 +26,9 @@ router.post('/save',authenticateToken, async (req, res) => {
 })
 router.delete('/delete',authenticateToken, async (req, res) => {
   try{
-    const {songId} = req.query
+    const {songId, lat, lng} = req.query
     const userId = req.user.id
-    await deleteSavedSong(songId, userId)
+    await deleteSavedSong(songId, userId, Number(lat), Number(lng))
     const updatedlist = await getSavedSongsForUser(req.user.id)
     res.status(200).json({message: "Successfully deleted this song", ok:true, results: updatedlist})
   }catch(err){
