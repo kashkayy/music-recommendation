@@ -41,7 +41,8 @@ router.get('/top/users', authenticateToken, checkRole(Role.admin), async (req, r
 router.put('/:userId/role-action', authenticateToken, checkRole(Role.admin), async (req, res) => {
     const {userId} = req.params
     try{
-        const updated = await toggleAdmin(userId)
+        await toggleAdmin(userId)
+        const updated = await getAllUsers()
         res.status(200).json({message: "Successfully changed role", results: updated, ok: true})
     }catch(err){
         res.status(500).json({message: "Cannot perform action at this time", ok: false})
@@ -50,7 +51,8 @@ router.put('/:userId/role-action', authenticateToken, checkRole(Role.admin), asy
 router.put('/:userId/ban-action', authenticateToken, checkRole(Role.admin), async (req, res) => {
     const {userId} = req.params
     try{
-        const updated = await toggleBan(userId)
+        await toggleBan(userId)
+        const updated = await getAllUsers()
         res.status(200).json({message: "Successfully changed status", results: updated, ok: true})
     }catch(err){
         res.status(500).json({message: "Cannot perform action at this time", ok: false})

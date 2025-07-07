@@ -10,9 +10,11 @@ export default function Login(){
       const response = await login(user);
       if(response.ok){
         navigate('/home', {replace: true, state : {username: user.username}})
-      }else{
-        alert("Incorrect username or password")
-      }
+      }else if(response.status === 401)
+        {alert(response.message)}
+      else{
+        alert(response.message)
+        }
     }catch(err){
       alert("Login failed. Try again")
     }

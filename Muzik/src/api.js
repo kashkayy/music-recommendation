@@ -103,3 +103,23 @@ export async function getTopUsers(){
     const data = await res.json()
     return data.results
 }
+export async function toggleAdmin(userId){
+  const token = getToken()
+  const res = await fetch (`${BASE_URL}/auth/admin/${userId}/role-action`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }, })
+    const data = await res.json()
+    return data.results
+}
+export async function toggleBan(userId){
+  const token = getToken()
+  const res = await fetch (`${BASE_URL}/auth/admin/${userId}/ban-action`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }, })
+    const data = await res.json()
+    return data.results
+}

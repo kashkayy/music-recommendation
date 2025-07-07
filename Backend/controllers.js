@@ -40,6 +40,19 @@ export async function login(username, password){
     console.log("Error logging in: ", err)
   }
 }
+export async function checkStatus(username){
+  try{
+    const status = await prisma.user.findUnique({
+      where: {
+        username: username,
+        isBanned: false
+      }
+    })
+    return status
+  }catch(err){
+    console.log("User is BANNED", err)
+  }
+}
 export async function getTrendingSongs(lat,lng){
   return prisma.songRanking.findMany({
     where:{

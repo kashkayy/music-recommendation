@@ -42,7 +42,7 @@ export default function Dashboard(){
           title: {
             display: true,
             enabled: true,
-            text: 'Top 10 trending songs🔥',
+            text: 'Top 10 most saved songs🔥',
             color: 'black',
             position: 'top',
             font: {size: 30, weight: 'bold'}
