@@ -3,3 +3,7 @@ export const SECTIONS = {
   USERS: "Users",
   SONGS: "Songs"
 }
+export const ROLE = {
+  admin: 'admin',
+  user: 'user'
+}

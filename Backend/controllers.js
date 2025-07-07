@@ -1,6 +1,7 @@
 import prisma from './PrismaClient.js';
 import bcrypt from 'bcrypt'
 import { fetchSearchResults } from './utils/SpotifyRoutes.js';
+import { Role } from './generated/prisma/index.js';
 export async function createUser(username, password) {
   const existingUser = await prisma.user.findUnique({
     where: { username },
@@ -168,8 +169,7 @@ export async function deleteSavedSong(songId, userId, lat, lng){
     console.log("Error deleting song from favorites", err)
   }
 }
-export async function getAllUsers(userRole){
-  if(userRole !== "admin") return
+export async function getAllUsers(){
   try{
     return await prisma.user.findMany()
   }catch(err){
@@ -199,5 +199,75 @@ export async function getSongById(songId){
     })
   }catch(err){
     console.log("Error fetching song by id", err)
+  }
+}
+export async function getTopTrendingSongs(){
+  try{
+    return await prisma.song.findMany({
+      orderBy : {
+        savedBy: {
+          _count: 'desc'
+        },
+      },
+      include : {
+        _count:{
+          select: {savedBy: true}
+        }
+      },
+      take: 10,
+    })
+  }catch(err){
+    console.log("Error fetching top 10", err)
+  }
+}
+export async function getTopUsers(){
+  try{
+    return await prisma.user.findMany({
+      orderBy: {
+        savedSongs: {
+          _count : 'desc'
+        },
+      },
+       include : {
+        _count:{
+          select: {savedSongs: true}
+        }
+      },
+      take: 10,
+    })
+  }catch(err){
+    console.log("Error fetching top users", err)
+  }
+}
+export async function toggleAdmin(userId){
+  try{
+    const getUser= await prisma.user.findUnique({
+      where: {id: Number(userId)}
+    })
+    if(!getUser) return "Try again"
+    const newRole = (getUser.role === Role.admin? Role.user : Role.admin)
+    const updatedUser = prisma.user.update({
+      where: {id: Number(userId)},
+      data: {role: newRole}
+    })
+    return updatedUser
+  }catch(err){
+    console.log("Cannot change role at this time", err)
+  }
+}
+export async function toggleBan(userId){
+  try{
+    const getUser = await prisma.user.findUnique({
+      where: {id: Number(userId)}
+    })
+    if(!getUser) return "Try again"
+    const newStatus = (getUser.isBanned? false : true)
+    const updatedUser = prisma.user.update({
+      where: {id: Number(userId)},
+      data: {isBanned: newStatus}
+    })
+    return updatedUser
+  }catch(err){
+    throw err
   }
 }

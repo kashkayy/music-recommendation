@@ -85,3 +85,21 @@ export async function getAllSongs(){
   const data = await res.json()
   return data.results
 }
+export async function getTopSongs(){
+  const token = getToken()
+  const res = await fetch(`${BASE_URL}/auth/admin/top/songs`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }, })
+    const data = await res.json()
+    return data.results
+}
+export async function getTopUsers(){
+  const token = getToken()
+  const res = await fetch(`${BASE_URL}/auth/admin/top/users`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }, })
+    const data = await res.json()
+    return data.results
+}

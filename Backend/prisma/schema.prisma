@@ -25,6 +25,7 @@ model User{
   createdAt              DateTime            @default(now())
   savedSongs             SavedSong[]
   role                   Role                @default(user)
+  isBanned               Boolean             @default(false)
 }
 model Song{
   id                     Int                 @id @default(autoincrement())

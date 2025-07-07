@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa'
+import {ROLE} from '../AdminSections.js'
 export default function DataTable({columns, data}){
   const [currPage, setCurrPage] = useState(1)
   const rows = 20
@@ -20,7 +21,14 @@ export default function DataTable({columns, data}){
             <tr>{columns.map((column) => <th>{column.header}</th>)}</tr>
           </thead>
           <tbody>
-            {(data.slice(startIndex, endIndex)).map((row) => <tr>{columns.map((column) => <td>{row[column.key]}</td>)}</tr>)}
+            {(data.slice(startIndex, endIndex)). map((row) => (
+              <tr>
+                {columns.map((column) => (
+                    column.key === 'actions'? (<td key='actions'>{row.role === ROLE.admin? <button>Revoke Admin</button>: <button> Make Admin</button>}{row.isBanned? <button>Unban</button>:<button>Ban</button>}</td>) :
+                    (<td key={column.key}>{row[column.key]}</td>)
+            ))}
+              </tr>
+            ))}
           </tbody>
         </table>
         <div className="page-control">
