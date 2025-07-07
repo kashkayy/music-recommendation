@@ -21,7 +21,7 @@ import MarkerModal from "../components/LocationModal"
     strictBounds: true,
   },
 };
-export default function MapPage(){
+export default function MapPage({userLat, userLng, onSave, favorites }){
   const [showModal, setShowModal] = useState(false);
   const [lat, setLat] = useState(null)
   const [lng, setLng] = useState(null)
@@ -43,7 +43,7 @@ export default function MapPage(){
     <>
       <h3>Welcome {location.state.username}</h3>
       <GoogleMap center={center} zoom={3} mapContainerStyle={containerStyle} options={options} onClick={handleClick}>
-        {showModal && <MarkerModal lat={lat} lng={lng} onClose={onCloseModal}/>}
+        {showModal && <MarkerModal lat={lat} lng={lng} onClose={onCloseModal} userLat={userLat} userLng={userLng} onSave={onSave} favorites={favorites}/>}
       </GoogleMap>
     </>
   )

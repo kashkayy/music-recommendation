@@ -3,10 +3,8 @@ import { useEffect, useState } from "react"
 import { getUserFavorites, deleteSavedSong, saveSong } from "../api";
 import { IoRemoveCircleOutline } from "react-icons/io5";
 import loading from "../assets/loading.svg"
-export default function SongsContainer({userLat, userLng}) {
-    const [favorites, setFavorites] = useState([]);
+export default function SongsContainer({userLat, userLng, favorites, setFavorites}) {
     const [isLoaded, setIsLoaded] = useState(false);
-    const [isSaved, setIsSaved] = useState(false);
     useEffect(() => {
         getUserFavorites().then((data) => setFavorites(data.results)).then(() => setIsLoaded(true))},[])
     const [showModal, setShowModal] = useState(false);
@@ -22,13 +20,11 @@ export default function SongsContainer({userLat, userLng}) {
         await deleteSavedSong(songId, lat, lng).then(data => {
             if (data.ok) {setFavorites(data.results)}
         });
-        setIsSaved(false)
     }
     async function handleAddToFavorite(song, lat, lng){
         await saveSong(song.id, lat, lng, song.title, song.artist, song.coverUrl).then(data => {
             if (data.ok) {setFavorites(data.results)}
          })
-         setIsSaved(true)
     }
     return (
     <>
@@ -36,7 +32,7 @@ export default function SongsContainer({userLat, userLng}) {
             <input type="text" placeholder="Search for song" value={query} onChange={(event) => setQuery(event.target.value)} />
             <button onClick={handleClick}>Search</button>
         </div>
-        {showModal && <SearchModal isSaved={isSaved} query={query} onClose={handleHide} onSave={handleAddToFavorite} userLat={userLat} userLng={userLng}/>}
+        {showModal && <SearchModal favorites={favorites} query={query} onClose={handleHide} onSave={handleAddToFavorite} userLat={userLat} userLng={userLng}/>}
         <div className="recommended-container">
             <h3 className="songs-header">Recommended songs for you</h3>
             <div className="recommended-songs">
