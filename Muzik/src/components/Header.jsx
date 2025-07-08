@@ -1,4 +1,9 @@
+import { useAuth } from "../auth/AuthContext";
 export default function Header({setCurrentSection}) {
+    const {logout} = useAuth()
+    function handleLogOut() {
+        logout()
+    }
     return(
         <>
             <header>
@@ -8,7 +13,7 @@ export default function Header({setCurrentSection}) {
                     <button onClick={() => setCurrentSection("map")}>Map</button>
                     <button onClick={() => setCurrentSection("admin")}>Admin</button>
                 </div>
-                <p>Discover the best music</p>
+                <button onClick={() => handleLogOut()}>Logout</button>
             </header>
         </>
     )

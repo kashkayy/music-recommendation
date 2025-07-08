@@ -26,6 +26,7 @@ model User{
   savedSongs             SavedSong[]
   role                   Role                @default(user)
   isBanned               Boolean             @default(false)
+  refreshToken           String?             
 }
 model Song{
   id                     Int                 @id @default(autoincrement())

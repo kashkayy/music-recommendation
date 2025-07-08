@@ -40,6 +40,17 @@ export async function login(username, password){
     console.log("Error logging in: ", err)
   }
 }
+export async function checkRefreshToken(userId, refreshToken){
+  try{
+    return await prisma.user.findUnique({
+      where: {
+        id: userId,
+        refreshToken: refreshToken,
+      }
+    })
+  }catch(err){
+  }
+}
 export async function checkStatus(username){
   try{
     const status = await prisma.user.findUnique({

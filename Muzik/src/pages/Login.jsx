@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api";
+import { useAuth } from "../auth/AuthContext";
 export default function Login(){
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const {login: saveToken} = useAuth()
   async function handleLogin(user){
     try{
       const response = await login(user);
       if(response.ok){
+        saveToken(response.token)
         navigate('/home', {replace: true, state : {username: user.username}})
       }else if(response.status === 401)
         {alert(response.message)}
