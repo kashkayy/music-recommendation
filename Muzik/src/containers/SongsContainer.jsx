@@ -3,8 +3,12 @@ import { useEffect, useState } from "react"
 import { getUserFavorites, deleteSavedSong, saveSong } from "../api";
 import { IoRemoveCircleOutline } from "react-icons/io5";
 import { Spinner } from "react-spinner-toolkit";
+import PlaybackModal from "../components/PlaybackModal";
 export default function SongsContainer({userLat, userLng, favorites, setFavorites}) {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [artist, setArtist] = useState(null);
+    const [title, setTitle] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
     useEffect(() => {
         getUserFavorites().then((data) => setFavorites(data.results)).then(() => setIsLoaded(true))},[])
     const [showModal, setShowModal] = useState(false);
@@ -26,6 +30,11 @@ export default function SongsContainer({userLat, userLng, favorites, setFavorite
             if (data.ok) {setFavorites(data.results)}
          })
     }
+    async function handleCardClick(song){
+        setArtist(song.artist);
+        setTitle(song.title);
+        setModalOpen(true);
+    }
     return (
     <>
         <div className="search-container">
@@ -33,6 +42,7 @@ export default function SongsContainer({userLat, userLng, favorites, setFavorite
             <button onClick={handleClick}>Search</button>
         </div>
         {showModal && <SearchModal favorites={favorites} query={query} onClose={handleHide} onSave={handleAddToFavorite} userLat={userLat} userLng={userLng}/>}
+        {modalOpen && <PlaybackModal artist={artist} title={title} onClose={() => setModalOpen(false)} />}
         <div className="recommended-container">
             <h3 className="songs-header">Recommended songs for you</h3>
             <div className="recommended-songs">
@@ -41,7 +51,7 @@ export default function SongsContainer({userLat, userLng, favorites, setFavorite
         <h2 className="songs-header">Your favorites list</h2>
         {isLoaded? <div className="favorite-songs">
             {favorites.map((favorite, index) => (
-                <div className="song-card" key={index}>
+                <div className="song-card" key={index} onClick={() => handleCardClick(favorite.song)}>
                     <img className="card-image" src={favorite.song.coverUrl}></img>
                     <div className="card-info">
                         <h3 className="card-song">{favorite.song.title}</h3>
