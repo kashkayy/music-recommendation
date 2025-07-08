@@ -2,7 +2,7 @@ import SearchModal from "../components/SearchResultsModal"
 import { useEffect, useState } from "react"
 import { getUserFavorites, deleteSavedSong, saveSong } from "../api";
 import { IoRemoveCircleOutline } from "react-icons/io5";
-import loading from "../assets/loading.svg"
+import { Spinner } from "react-spinner-toolkit";
 export default function SongsContainer({userLat, userLng, favorites, setFavorites}) {
     const [isLoaded, setIsLoaded] = useState(false);
     useEffect(() => {
@@ -52,7 +52,7 @@ export default function SongsContainer({userLat, userLng, favorites, setFavorite
                     </div>
                 </div>
             ))}
-        </div> : <div className="loading-container"><img src={loading}></img></div>}
+        </div> : <div className="loading-container"><Spinner shape="threeDots" color="#888" loading speed={1} size={300} transition={true} /></div>}
     </>
   )
 }

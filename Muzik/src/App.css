@@ -7,7 +7,7 @@
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f8f8f8;
+    background-color: lightgray;
     height: 100%;
     box-sizing: border-box;
 }
@@ -89,7 +89,7 @@ label{
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  width: 500px;
+  width: 50rem;
   height: 40rem;
   position: relative;
 }
@@ -102,9 +102,12 @@ label{
 }
 
 .modal-content {
+  display: flex;
   padding: 1rem;
   overflow: scroll;
   height: 33rem;
+  justify-content: space-between;
+  flex-direction: column;
 }
 .songs-header{
   margin-top: 2rem;
@@ -118,7 +121,7 @@ label{
 .song-info{
     display: flex;
     align-items: center;
-    gap: 5rem;
+    justify-content: space-between;
     margin-bottom: 2rem;
 }
 .song-img{
@@ -174,12 +177,15 @@ label{
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 1.3rem;
 }
 .card-song{
   font-size: 2rem;
   font-weight: bold;
-  margin: none;
+  margin-top: none;
+}
+.card-artist{
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
 }
 .favorite-action{
   font-size: 3rem;
@@ -198,6 +204,19 @@ label{
   justify-content: center;
   color: red;
   font-size: 5rem;
+  animation-duration: 1s;
+  animation-name: slidein;
+  animation-iteration-count: 1;
+}
+@keyframes slidein {
+  from {
+    margin-left: 100%;
+    width: 300%;
+  }
+  to {
+    margin-left: 0%;
+    width: 100%;
+  }
 }
 .delete-action{
   color: red;
@@ -207,10 +226,11 @@ label{
   background-color: transparent;
   justify-content: center;
   align-items: center;
+  margin-left: 10rem;
+  margin-top: 33rem;
 }
 .search-modal{
   display: flex;
-  justify-content: flex-start;
   flex-direction: column;
   align-items: center;
   background-color: transparent ;
@@ -231,4 +251,50 @@ label{
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+}
+.sidebar.open{
+  width: 200px;
+  transition: width 700ms;
+  background: #222;
+  overflow: hidden;
+  color: #fff;
+}
+.sidebar{
+  width: 60px;
+}
+.aside{
+  display: flex;
+  height: 100vh;
+  border: none;
+}
+.admin{
+  display: flex;
+  height: 100vh;
+}
+.data-page{
+  display: flex;
+  flex-direction: column;
+  margin-left: 2rem;
+  height: fit-content;
+}
+.page-control{
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+.next{
+  display: flex;
+  font-size: 3rem;
+  cursor: pointer;
+}
+.prev{
+  display: flex;
+  font-size: 3rem;
+  cursor: pointer;
+}
+.dashboard{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
