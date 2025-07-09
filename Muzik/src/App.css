@@ -158,20 +158,48 @@ label{
   position: relative;
   margin: 20px;
   display: flex;
-  height: 27rem;
+  height: 29rem;
   width: 19rem;
   align-items: center;
   flex-direction: column;
   box-sizing: border-box;
-  border: none;
+  border: #888 solid 1px;
   border-radius: 1.4rem;
   cursor: pointer;
+  transition: box-shadow 0.5s ease;
+}
+.song-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 20px 30px rgba(0, 0, 0, 0.2);
+  border: none;
 }
 .card-image{
   border-radius: 1.35rem;
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
+}
+.card-img-wrapper{
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+.play-pause-button{
+  display: flex;
+  position: absolute;
+  cursor: pointer;
+  top: 50%;
+  left: 50%;
+  font-size: 2rem;
+  border: none;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+  z-index: 5;
+  justify-content: center;
+  align-items: center;
+  border-radius: 25%;
+}
+.play-pause-button:hover{
+  background-color: #888;
 }
 .card-info{
   display: flex;
