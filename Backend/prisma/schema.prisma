@@ -44,11 +44,8 @@ model SavedSong{
   userId                 Int
   lat                    Float
   lng                    Float
-  roundedLat             Float
-  roundedLng             Float
 
   @@index([lat, lng])
-  @@index([roundedLat, roundedLng])
   @@unique([songId, userId])
 }
 model SongRanking{
