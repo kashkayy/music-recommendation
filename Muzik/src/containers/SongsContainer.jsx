@@ -5,15 +5,13 @@ import { IoRemoveCircleOutline } from "react-icons/io5";
 import { Spinner } from "react-spinner-toolkit";
 import AudioPlayer from "../components/AudioPlayer";
 import { FaPlay, FaPause } from 'react-icons/fa';
+import useSongPlayer from "../utils/SongPlayer"
 export default function SongsContainer({userLat, userLng, favorites, setFavorites}) {
     const [isLoaded, setIsLoaded] = useState(false);
-    const [artist, setArtist] = useState(null);
-    const [title, setTitle] = useState(null);
-    const [isClicked, setIsClicked] = useState(false)
-    const [currSong, setCurrSong] = useState(null)
-    const [isPlaying, setIsPlaying] = useState(false)
+    const {isPlaying, checkSongPlaying, handlePlayPauseClick,
+        artist, title, handleEnd, handleCardClick, currSong, isClicked} = useSongPlayer()
     useEffect(() => {
-        getUserFavorites().then((data) => setFavorites(data.results)).then(() => setIsLoaded(true))},[])
+        getUserFavorites().then((data) => {setFavorites(data.results); setIsLoaded(true)})},[])
     const [showModal, setShowModal] = useState(false);
     const [query, setQuery] = useState("");
     function handleClick(event){
@@ -25,7 +23,8 @@ export default function SongsContainer({userLat, userLng, favorites, setFavorite
             if (data.ok) {setFavorites(data.results)}
         });
     }
-    async function handleAddToFavorite(song, lat, lng){
+    async function handleAddToFavorite(song, lat, lng, event){
+        event.stopPropagation();
         await saveSong(song.id, lat, lng, song.title, song.artist, song.coverUrl).then(data => {
             if (data.ok) {setFavorites(data.results)}
          })
@@ -33,37 +32,6 @@ export default function SongsContainer({userLat, userLng, favorites, setFavorite
     function handleHide(){
         setShowModal(false);
     }
-    async function handleCardClick(song){
-        setArtist(song.artist);
-        setTitle(song.title);
-        setCurrSong(song)
-        setIsClicked(true);
-        setIsPlaying(true);
-    }
-  function isSongPlaying(song){
-    return(
-        currSong &&
-        currSong.title === song.title && currSong.artist === song.artist
-    )
-  }
-  function handleEnd(){
-    setArtist(null);
-    setTitle(null);
-    setIsClicked(false);
-    setCurrSong(null);
-  }
-  function handlePlayPauseClick(song, event){
-    event.stopPropagation()
-    if (song === currSong){
-        setIsPlaying(!isPlaying)
-    }else{
-        setArtist(song.artist);
-        setTitle(song.title);
-        setCurrSong(song)
-        setIsClicked(true);
-        setIsPlaying(true);
-    }
-  }
     return (
     <>
         <div className="search-container">
@@ -78,14 +46,14 @@ export default function SongsContainer({userLat, userLng, favorites, setFavorite
         </div>
         <h2 className="songs-header">Your favorites list</h2>
         {isLoaded? <div className="favorite-songs">
-            {favorites.map((favorite, index) => (
-                <div className="song-card" key={index} onClick={() => handleCardClick(favorite.song)}>
+            {favorites.map((favorite) => (
+                <div className="song-card" key={favorite.song.id} onClick={() => handleCardClick(favorite.song)}>
                     <div className="card-img-wrapper">
                         <img className="card-image" src={favorite.song.coverUrl}/>
                         <div className="play-pause-button" onClick={(event) => handlePlayPauseClick(favorite.song, event)}>
-                            {isPlaying && isSongPlaying(favorite.song)? <FaPause/> : <FaPlay/>}
+                            {(checkSongPlaying(favorite.song) && isPlaying)? <FaPause/> : <FaPlay/>}
                         </div>
-                        {isClicked && isSongPlaying(favorite.song) && (<AudioPlayer
+                        {isClicked && checkSongPlaying(favorite.song) && (<AudioPlayer
                     song={currSong}
                     selectedArtist={artist} selectedTitle={title}
                     onEnd={handleEnd}
