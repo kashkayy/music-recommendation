@@ -1,43 +1,46 @@
-import prisma from './PrismaClient.js';
-import bcrypt from 'bcrypt'
-import { fetchSearchResults } from './utils/SpotifyRoutes.js';
-import { Role } from './generated/prisma/index.js';
+import prisma from "./PrismaClient.js";
+import bcrypt from "bcrypt";
+import { fetchSearchResults } from "./utils/SpotifyRoutes.js";
+import { Role } from "./generated/prisma/index.js";
 export async function createUser(username, password) {
   const existingUser = await prisma.user.findUnique({
     where: { username },
   });
   if (existingUser) {
-    throw new Error('Username already exists.');
+    throw new Error("Username already exists.");
   }
   try {
-    const passwordhash = bcrypt.hashSync(password, 10)
+    const passwordhash = bcrypt.hashSync(password, 10);
     return await prisma.user.create({
       data: {
         username,
         passwordhash,
       },
-    })
+    });
   } catch (err) {
-    console.log("Error creating user: ", err)
+    console.log("Error creating user: ", err);
   }
 }
 export async function login(username, password) {
   try {
     const getUser = await prisma.user.findUnique({
       where: {
-        username: username
-      }
-    })
+        username: username,
+      },
+    });
     if (!getUser) {
-      return
+      return;
     }
-    const passwordIsCorrect = await bcrypt.compare(password, getUser.passwordhash)
+    const passwordIsCorrect = await bcrypt.compare(
+      password,
+      getUser.passwordhash,
+    );
     if (!passwordIsCorrect) {
-      return
+      return;
     }
-    return getUser
+    return getUser;
   } catch (error) {
-    console.log("Error logging in: ", err)
+    console.log("Error logging in: ", err);
   }
 }
 export async function checkRefreshToken(userId, refreshToken) {
@@ -46,43 +49,42 @@ export async function checkRefreshToken(userId, refreshToken) {
       where: {
         id: userId,
         refreshToken: refreshToken,
-      }
-    })
-  } catch (err) {
-  }
+      },
+    });
+  } catch (err) {}
 }
 export async function checkStatus(username) {
   try {
     const status = await prisma.user.findUnique({
       where: {
         username: username,
-        isBanned: false
-      }
-    })
-    return status
+        isBanned: false,
+      },
+    });
+    return status;
   } catch (err) {
-    console.log("User is BANNED", err)
+    console.log("User is BANNED", err);
   }
 }
 export async function getTrendingSongs(lat, lng) {
   return prisma.songRanking.findMany({
     where: {
       lat: { gte: lat - 3, lte: lat + 3 },
-      lng: { gte: lng - 3, lte: lng + 3 }
+      lng: { gte: lng - 3, lte: lng + 3 },
     },
     include: { song: true },
-    orderBy: { score: 'desc' },
+    orderBy: { score: "desc" },
     take: 30,
-  })
+  });
 }
 export async function getSavedSongsForUser(userId) {
   try {
     return await prisma.savedSong.findMany({
       where: { userId: userId },
-      include: { song: true }
-    })
+      include: { song: true },
+    });
   } catch (err) {
-    console.log("Error fetching saved songs for this user", err)
+    console.log("Error fetching saved songs for this user", err);
   }
 }
 export async function findOrCreateSong(title, artist, coverUrl) {
@@ -90,16 +92,16 @@ export async function findOrCreateSong(title, artist, coverUrl) {
     let song = await prisma.song.findFirst({
       where: {
         title: title,
-        artist: artist
-      }
+        artist: artist,
+      },
     });
     if (!song) {
       song = await prisma.song.create({
         data: {
           title: title,
           artist: artist,
-          coverUrl: coverUrl
-        }
+          coverUrl: coverUrl,
+        },
       });
     }
     return song;
@@ -107,7 +109,15 @@ export async function findOrCreateSong(title, artist, coverUrl) {
     console.log("Error finding or creating song", err);
   }
 }
-export async function createSavedSong(userId, songId, title, artist, coverUrl, userLat, userLng) {
+export async function createSavedSong(
+  userId,
+  songId,
+  title,
+  artist,
+  coverUrl,
+  userLat,
+  userLng,
+) {
   try {
     const song = await findOrCreateSong(title, artist, coverUrl);
     const savedSong = await prisma.savedSong.create({
@@ -119,7 +129,7 @@ export async function createSavedSong(userId, songId, title, artist, coverUrl, u
       },
     });
     await findOrCreateSongRanking(song.id || songId, userLat, userLng);
-    return savedSong
+    return savedSong;
   } catch (err) {
     console.log("Error adding song to list", err);
   }
@@ -130,9 +140,9 @@ export async function findOrCreateSongRanking(songId, lat, lng) {
       where: {
         songId: songId,
         lat: { gte: lat - 1, lte: lat + 1 },
-        lng: { gte: lng - 1, lte: lng + 1 }
+        lng: { gte: lng - 1, lte: lng + 1 },
       },
-    })
+    });
     if (!songRanking) {
       songRanking = await prisma.songRanking.create({
         data: {
@@ -140,16 +150,17 @@ export async function findOrCreateSongRanking(songId, lat, lng) {
           score: 1,
           lat: lat,
           lng: lng,
-        }
+        },
       });
     } else {
       songRanking = await prisma.songRanking.update({
         where: {
-          id: songRanking.id
-        }, data: {
-          score: songRanking.score + 1
-        }
-      })
+          id: songRanking.id,
+        },
+        data: {
+          score: songRanking.score + 1,
+        },
+      });
     }
     return songRanking;
   } catch (err) {
@@ -158,10 +169,10 @@ export async function findOrCreateSongRanking(songId, lat, lng) {
 }
 export async function searchResults(searchQuery) {
   try {
-    const searchResults = fetchSearchResults(searchQuery)
-    return searchResults
+    const searchResults = fetchSearchResults(searchQuery);
+    return searchResults;
   } catch (err) {
-    console.log("Error fetching search results", err)
+    console.log("Error fetching search results", err);
   }
 }
 export async function deleteSavedSong(songId, userId, lat, lng) {
@@ -170,59 +181,60 @@ export async function deleteSavedSong(songId, userId, lat, lng) {
       where: {
         songId: Number(songId),
         lat: { gte: lat - 1, lte: lat + 1 },
-        lng: { gte: lng - 1, lte: lng + 1 }
+        lng: { gte: lng - 1, lte: lng + 1 },
       },
-    })
+    });
     const results = await prisma.savedSong.delete({
       where: {
         songId_userId: {
           songId: Number(songId),
           userId: userId,
-        }
-      }
-    })
+        },
+      },
+    });
     songRanking = await prisma.songRanking.update({
       where: {
-        id: songRanking.id
-      }, data: {
-        score: songRanking.score - 1
-      }
-    })
-    return results
+        id: songRanking.id,
+      },
+      data: {
+        score: songRanking.score - 1,
+      },
+    });
+    return results;
   } catch (err) {
-    console.log("Error deleting song from favorites", err)
+    console.log("Error deleting song from favorites", err);
   }
 }
 export async function getAllUsers() {
   try {
-    return await prisma.user.findMany()
+    return await prisma.user.findMany();
   } catch (err) {
-    console.log("Error fetching all users", err)
+    console.log("Error fetching all users", err);
   }
 }
 export async function getUserById(userId) {
   try {
     return await prisma.user.findUnique({
-      where: { id: userId }
-    })
+      where: { id: userId },
+    });
   } catch (err) {
-    console.log("Error fetching user by id", err)
+    console.log("Error fetching user by id", err);
   }
 }
 export async function getAllSongs() {
   try {
-    return await prisma.song.findMany()
+    return await prisma.song.findMany();
   } catch (err) {
-    console.log("Error fetching all songs", err)
+    console.log("Error fetching all songs", err);
   }
 }
 export async function getSongById(songId) {
   try {
     return await prisma.song.findUnique({
-      where: { id: songId }
-    })
+      where: { id: songId },
+    });
   } catch (err) {
-    console.log("Error fetching song by id", err)
+    console.log("Error fetching song by id", err);
   }
 }
 export async function getTopTrendingSongs() {
@@ -230,18 +242,18 @@ export async function getTopTrendingSongs() {
     return await prisma.song.findMany({
       orderBy: {
         savedBy: {
-          _count: 'desc'
+          _count: "desc",
         },
       },
       include: {
         _count: {
-          select: { savedBy: true }
-        }
+          select: { savedBy: true },
+        },
       },
       take: 10,
-    })
+    });
   } catch (err) {
-    console.log("Error fetching top 10", err)
+    console.log("Error fetching top 10", err);
   }
 }
 export async function getTopUsers() {
@@ -249,49 +261,49 @@ export async function getTopUsers() {
     return await prisma.user.findMany({
       orderBy: {
         savedSongs: {
-          _count: 'desc'
+          _count: "desc",
         },
       },
       include: {
         _count: {
-          select: { savedSongs: true }
-        }
+          select: { savedSongs: true },
+        },
       },
       take: 10,
-    })
+    });
   } catch (err) {
-    console.log("Error fetching top users", err)
+    console.log("Error fetching top users", err);
   }
 }
 export async function toggleAdmin(userId) {
   try {
     const getUser = await prisma.user.findUnique({
-      where: { id: Number(userId) }
-    })
-    if (!getUser) return "Try again"
-    const newRole = (getUser.role === Role.admin ? Role.user : Role.admin)
+      where: { id: Number(userId) },
+    });
+    if (!getUser) return "Try again";
+    const newRole = getUser.role === Role.admin ? Role.user : Role.admin;
     const updatedUser = prisma.user.update({
       where: { id: Number(userId) },
-      data: { role: newRole }
-    })
-    return updatedUser
+      data: { role: newRole },
+    });
+    return updatedUser;
   } catch (err) {
-    console.log("Cannot change role at this time", err)
+    console.log("Cannot change role at this time", err);
   }
 }
 export async function toggleBan(userId) {
   try {
     const getUser = await prisma.user.findUnique({
-      where: { id: Number(userId) }
-    })
-    if (!getUser) return "Try again"
-    const newStatus = (getUser.isBanned ? false : true)
+      where: { id: Number(userId) },
+    });
+    if (!getUser) return "Try again";
+    const newStatus = getUser.isBanned ? false : true;
     const updatedUser = prisma.user.update({
       where: { id: Number(userId) },
-      data: { isBanned: newStatus }
-    })
-    return updatedUser
+      data: { isBanned: newStatus },
+    });
+    return updatedUser;
   } catch (err) {
-    throw err
+    throw err;
   }
 }
