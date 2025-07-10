@@ -1,9 +1,9 @@
 export const SECTIONS = {
-  DASHBOARD : "Dashboard",
+  DASHBOARD: "Dashboard",
   USERS: "Users",
-  SONGS: "Songs"
-}
+  SONGS: "Songs",
+};
 export const ROLE = {
-  admin: 'admin',
-  user: 'user'
-}
+  admin: "admin",
+  user: "user",
+};
