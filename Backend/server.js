@@ -5,6 +5,7 @@ import trendingRoutes from './routes/trendingSongRoutes.js'
 import searchRoutes from './routes/searchRoutes.js'
 import savedSongsRoutes from './routes/savedSongRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import clusterRoutes from './routes/clusterRoutes.js'
 const app = express()
 const PORT = 5200;
 app.use(express.json())
@@ -21,4 +22,5 @@ authRoutes.use('/login/trending', trendingRoutes)
 authRoutes.use('/search', searchRoutes)
 authRoutes.use('/favorites', savedSongsRoutes)
 authRoutes.use('/admin', adminRoutes)
+authRoutes.use('/clusters', clusterRoutes)
 app.listen(PORT, console.log(`Successful connection to ${PORT}`))
