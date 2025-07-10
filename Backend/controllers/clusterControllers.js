@@ -1,11 +1,11 @@
-import prisma from '../PrismaClient'
-export async function getClustersData(latMin, latMax, lngMin, lngMax) {
+import prisma from '../PrismaClient.js'
+export async function getClustersData({latMin, latMax, lngMin, lngMax}) {
     try {
         return await prisma.savedSong.groupBy({
             by: ['roundedLat', 'roundedLng', 'songId'],
             where: {
                 lat: { gte: latMin, lte: latMax },
-                lat: { gte: lngMin, lte: lngMax }
+                lng: { gte: lngMin, lte: lngMax }
             },
             _count: {
                 songId: true
@@ -20,7 +20,7 @@ export async function getClustersData(latMin, latMax, lngMin, lngMax) {
         throw new Error("Error getting clusters data")
     }
 }
-export async function getTopSongs(roundedLat, roundedLng) {
+export async function getTopSongs({roundedLat, roundedLng}) {
     try {
         const songs = await prisma.savedSong.findMany({
             where: {

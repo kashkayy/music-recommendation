@@ -25,7 +25,7 @@ async function main() {
   });
   const songs = await fetchSeedSongs('5ABHKGoOzxkaa28ttQV9sE');
   const createdSongs = [];
-  for (const song of songs){
+  for (const song of songs) {
     const createdSongRanking = await prisma.songRanking.create({
       data: {
         song: {
@@ -37,7 +37,7 @@ async function main() {
         },
         lat: defaultLat,
         lng: defaultLng,
-        score: 1,
+        score: Math.ceil((Math.random() * 20)),
       },
       include: {
         song: true
@@ -51,7 +51,9 @@ async function main() {
         songId: createdSongs[i].id,
         userId: testUser1.id,
         lat: defaultLat + (Math.random() * 5),
-        lng: defaultLng + (Math.random() * 5)
+        lng: defaultLng + (Math.random() * 5),
+        roundedLat: defaultLat,
+        roundedLng: defaultLng
       }
     });
   }
@@ -61,7 +63,9 @@ async function main() {
         songId: createdSongs[i].id,
         userId: testUser2.id,
         lat: defaultLat + 1.0 + (Math.random() * 5),
-        lng: defaultLng + 1.0 + (Math.random() * 5)
+        lng: defaultLng + 1.0 + (Math.random() * 5),
+        roundedLat: defaultLat + 1.0,
+        roundedLng: defaultLng + 1.0
       }
     });
   }
