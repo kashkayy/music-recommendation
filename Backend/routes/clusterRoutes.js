@@ -6,8 +6,7 @@ import {
 } from "../controllers/clusterControllers.js";
 import { parseObj } from "../utils/ParseObj.js";
 const router = express.Router();
-router.get("/data", authenticateToken, async (req, res) => {
-  const { latMin, latMax, lngMin, lngMax } = req.query;
+router.get("/info", authenticateToken, async (req, res) => {
   const parsedObj = parseObj(req.query);
   if (!parsedObj) {
     return res
@@ -21,10 +20,9 @@ router.get("/data", authenticateToken, async (req, res) => {
     res.status(400).json({ error: error.message, ok: false });
   }
 });
-router.get("/data/songs", authenticateToken, async (req, res) => {
-  const { roundedLat, roundedLng } = req.query;
+router.get("/songs", authenticateToken, async (req, res) => {
   const parsedObj = parseObj(req.query);
-  if (isNaN(roundedLat) || isNaN(roundedLng)) {
+  if (!parsedObj) {
     return res
       .status(400)
       .json({ message: "error processing request", ok: false });
