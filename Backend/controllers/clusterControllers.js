@@ -11,17 +11,18 @@ export async function getClustersData({
   lngMax,
   zoom,
 }) {
-  const bucketSize = getBucketSizeFromZoom(zoom);
+  const centerLat = ((latMin + latMax)/2)
+  const {bucketLat, bucketLng} = getBucketSizeFromZoom(zoom, centerLat);
   const boundBox = getCoordBounds(latMax, lngMax, latMin, lngMin);
-  if (!bucketSize) throw new Error("Something went wrong.");
+  if (!bucketLat || !bucketLng) throw new Error("Something went wrong.");
   try {
     const savedSongs = await prisma.savedSong.findMany({
       where: boundBox,
     });
     const clusterMap = {};
     for (const song of savedSongs) {
-      const roundedLat = roundedCalculator(song.lat, bucketSize);
-      const roundedLng = roundedCalculator(song.lng, bucketSize);
+      const roundedLat = roundedCalculator(song.lat, bucketLat);
+      const roundedLng = roundedCalculator(song.lng, bucketLng);
       const key = `${roundedLat}_${roundedLng}`;
       if (clusterMap[key]) {
         clusterMap[key].count++;
@@ -39,38 +40,38 @@ export async function getClustersData({
   }
 }
 export async function getTopSongs({ lat, lng, zoom }) {
-  const bucketSize = getBucketSizeFromZoom(zoom);
-  const roundedLat = roundedCalculator(lat, bucketSize);
-  const roundedLng = roundedCalculator(lng, bucketSize);
-  if (!bucketSize || !roundedLat || !roundedLng)
+  const {bucketLat, bucketLng} = getBucketSizeFromZoom(zoom);
+  if (!bucketLat|| !bucketLng)
     throw new Error("Something went wrong");
-  const latMin = roundedLat;
-  const latMax = roundedLat + bucketSize;
-  const lngMin = roundedLng;
-  const lngMax = roundedLng + bucketSize;
-  const boundBox = getCoordBounds(latMax, lngMax, latMin, lngMin);
+  const latMin = lat-bucketLat;
+  const latMax = lat + bucketLat;
+  const lngMin = lng -bucketLng;
+  const lngMax = lng + bucketLng;
+  const songLimit = 30
+  console.log("Coords of visible boundary: ", latMax, latMin, lngMax, lngMin)
+  console.log("bucketCoords: ", bucketLat, bucketLng)
   try {
-    const songs = await prisma.savedSong.findMany({
-      where: boundBox,
-      include: {
-        song: true,
-      },
-    });
-    const songMap = {};
-    for (const item of songs) {
-      const id = item.songId;
-      if (songMap[id]) {
-        songMap[id].count++;
-      } else {
-        songMap[id] = {
-          count: 1,
-          song: item.song,
-        };
-      }
-    }
-    return Object.values(songMap)
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 30);
+    const topSongs = await prisma.$queryRaw`
+      SELECT 
+        s.id AS id,
+        s.title AS title,
+        s.artist AS artist,
+        s."coverUrl" AS coverUrl,
+        COUNT(ss."songId")::integer AS save_count
+      FROM
+        "SavedSong" ss
+      JOIN
+        "Song" s ON ss."songId" = s.id
+      WHERE
+        ss.lat BETWEEN ${latMin} AND ${latMax}
+        AND ss.lng BETWEEN ${lngMin} AND ${lngMax}
+      GROUP BY
+        s.id, s.title, s.artist, s."coverUrl"
+      ORDER BY
+        save_count DESC
+      LIMIT ${songLimit}
+      `
+    return topSongs
   } catch (err) {
     throw new Error("Error getting top songs");
   }

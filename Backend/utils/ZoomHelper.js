@@ -1,26 +1,32 @@
-export function getBucketSizeFromZoom(zoom) {
-  let bucketSize = 5;
-  if (zoom > 22.0 || zoom < 0.0) bucketSize = null;
-  switch (true) {
-    case zoom < 5.0:
-      bucketSize = 5;
-      break;
-    case zoom < 10.0:
-      bucketSize = 2;
-      break;
-    case zoom < 14.0:
-      bucketSize = 1;
-      break;
-    case zoom < 18.0:
-      bucketSize = 0.5;
-      break;
-    case zoom < 22.0:
-      bucketSize = 0.25;
-      break;
-    default:
-      return;
-  }
-  return bucketSize;
+//Maps each google Maps zoom level to an approximate bucket size in degrees
+// higher zoom = smaller buckets and vice versa 
+const bucketSizeByZoomLevel = {
+  1: 5.0,
+  2: 2.5,
+  3: 1.5,
+  4: 1.0,
+  5: 0.5,
+  6: 0.25,
+  7: 0.1,
+  8: 0.05,
+  9: 0.02,
+  10: 0.01,
+  11: 0.005,
+  12: 0.002,
+  13: 0.001,
+  14: 0.0005,
+  15: 0.00025,
+  16: 0.0001,
+  17: 0.00005,
+  18: 0.000025,
+  19: 0.00001,
+  20: 0.000005,
+}
+export function getBucketSizeFromZoom(zoom, centerLat = 0) {
+  const base = bucketSizeByZoomLevel[zoom] || 0.0001
+  const bucketLat = base
+  const bucketLng = (base / Math.cos(centerLat * Math.PI / 180))
+  return {bucketLat, bucketLng}
 }
 export function getCoordBounds(latMax, lngMax, latMin, lngMin) {
   return {
@@ -28,6 +34,6 @@ export function getCoordBounds(latMax, lngMax, latMin, lngMin) {
     lng: { gte: lngMin, lte: lngMax },
   };
 }
-export function roundedCalculator(coord, bucketSize) {
-  return Math.floor((coord * bucketSize) / bucketSize);
+export function roundedCalculator(coord, bucketCoord) {
+  return Math.floor((coord * bucketCoord) / bucketCoord)
 }
