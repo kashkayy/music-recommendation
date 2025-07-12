@@ -1,67 +1,56 @@
-import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { GoogleMap, useLoadScript } from "@react-google-maps/api";
-import MarkerModal from "../components/LocationModal";
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import useFetchClusters from "../hooks/useFetchClusters";
 const center = {
   lat: 20.0,
   lng: 0.0,
 };
-const containerStyle = {
-  width: "100%",
-  height: "80vh",
-};
 const options = {
-  restriction: {
-    latLngBounds: {
-      north: 85,
-      south: -85,
-      west: -180,
-      east: 180,
-    },
-    strictBounds: true,
-  },
+  north: 90,
+  south: -90,
+  east: 180,
+  west: -180,
 };
+function ClusteredMap({ clusters }) {
+  return clusters.map((cluster) => (
+    <AdvancedMarker
+      key={`${cluster.lat}_${cluster.lng}`}
+      position={{ lat: cluster.lat, lng: cluster.lng }}
+    >
+      <div
+        style={{
+          display: "flex",
+          height: "24px",
+          width: "24px",
+        }}
+      >
+        {`${cluster.count} saves 🔥`}
+      </div>
+    </AdvancedMarker>
+  ));
+}
 export default function MapPage({ userLat, userLng, onSave, favorites }) {
-  const [showModal, setShowModal] = useState(false);
-  const [lat, setLat] = useState(null);
-  const [lng, setLng] = useState(null);
   const location = useLocation();
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-  });
-  if (!isLoaded) return <span>Loading...</span>;
-  function handleClick(event) {
-    setLat(event.latLng.lat());
-    setLng(event.latLng.lng());
-    setShowModal(true);
-  }
-  function onCloseModal() {
-    setShowModal(false);
-    setLat(null);
-    setLng(null);
-  }
+  const { handleMapIdle, clusters } = useFetchClusters();
   return (
     <>
       <h3>Welcome {location.state.username}</h3>
-      <GoogleMap
-        center={center}
-        zoom={3}
-        mapContainerStyle={containerStyle}
-        options={options}
-        onClick={handleClick}
-      >
-        {showModal && (
-          <MarkerModal
-            lat={lat}
-            lng={lng}
-            onClose={onCloseModal}
-            userLat={userLat}
-            userLng={userLng}
-            onSave={onSave}
-            favorites={favorites}
-          />
-        )}
-      </GoogleMap>
+      <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+        <div style={{ height: "85vh", width: "100%" }}>
+          <Map
+            defaultZoom={2}
+            minZoom={2}
+            defaultCenter={center}
+            mapId={import.meta.env.VITE_MAP_ID}
+            gestureHandling="greedy"
+            disableDefaultUI={false}
+            onIdle={(event) => handleMapIdle(event.map)}
+            defaultBounds={options}
+          >
+            <ClusteredMap clusters={clusters} />
+          </Map>
+        </div>
+      </APIProvider>
     </>
   );
 }
