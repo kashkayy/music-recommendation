@@ -12,6 +12,7 @@
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.5.3",
     "@react-google-maps/api": "^2.20.7",
+    "@vis.gl/react-google-maps": "^1.5.4",
     "chart.js": "^4.5.0",
     "dotenv": "^17.0.0",
     "hamburger-react": "^2.5.2",

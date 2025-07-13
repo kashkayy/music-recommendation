@@ -5,7 +5,7 @@ import { FaCheck } from "react-icons/fa";
 import { FaPlay, FaPause } from "react-icons/fa";
 import loading from "../assets/loading.svg";
 import AudioPlayer from "./AudioPlayer";
-import useSongPlayer from "../utils/SongPlayer";
+import useSongPlayer from "../hooks/SongPlayer";
 export default function SearchModal({
   query,
   onClose,
@@ -37,7 +37,7 @@ export default function SearchModal({
     return favorites.some(
       (favorite) =>
         favorite.song.title === song.title &&
-        favorite.song.artist === song.artist,
+        favorite.song.artist === song.artist
     );
   }
   return (
