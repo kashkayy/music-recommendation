@@ -5,7 +5,7 @@ import { IoRemoveCircleOutline } from "react-icons/io5";
 import { Spinner } from "react-spinner-toolkit";
 import AudioPlayer from "../components/AudioPlayer";
 import { FaPlay, FaPause } from "react-icons/fa";
-import useSongPlayer from "../utils/SongPlayer";
+import useSongPlayer from "../hooks/SongPlayer";
 export default function SongsContainer({
   userLat,
   userLng,
@@ -51,7 +51,7 @@ export default function SongsContainer({
       lng,
       song.title,
       song.artist,
-      song.coverUrl,
+      song.coverUrl
     ).then((data) => {
       if (data.ok) {
         setFavorites(data.results);
