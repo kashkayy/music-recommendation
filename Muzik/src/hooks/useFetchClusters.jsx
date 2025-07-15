@@ -2,6 +2,9 @@ import { useCallback, useState } from "react";
 import { getClusters } from "../api";
 export default function useFetchClusters() {
   const [clusters, setClusters] = useState([]);
+  const [selectedCluster, setSelectedCluster] = useState(null);
+  const [zoom, setZoom] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const fetchClusters = useCallback(
     async ({ latMin, latMax, lngMin, lngMax, zoom }) => {
       try {
@@ -39,5 +42,24 @@ export default function useFetchClusters() {
     },
     [fetchClusters, setClusters]
   );
-  return { handleMapIdle, clusters };
+  const handleMarkerClick = useCallback((cluster, zoom) => {
+    setSelectedCluster(cluster);
+    setZoom(zoom);
+    setShowModal(true);
+  }, [setSelectedCluster, setZoom, setShowModal])
+
+  const handleModalClose = useCallback(() => {
+    setSelectedCluster(null);
+    setShowModal(false);
+  }, [setSelectedCluster, setShowModal])
+  return {
+    handleMapIdle,
+    clusters,
+    fetchClusters,
+    handleMarkerClick,
+    selectedCluster,
+    zoom,
+    handleModalClose,
+    showModal,
+  };
 }
