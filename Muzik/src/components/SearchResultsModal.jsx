@@ -3,7 +3,7 @@ import { getSearchResults } from "../api";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa";
 import { FaPlay, FaPause } from "react-icons/fa";
-import loading from "../assets/loading.svg";
+import { Spinner } from "react-spinner-toolkit";
 import AudioPlayer from "./AudioPlayer";
 import useSongPlayer from "../hooks/SongPlayer";
 export default function SearchModal({
@@ -105,7 +105,14 @@ export default function SearchModal({
             </div>
           ) : (
             <div className="loading-container">
-              <img src={loading} className="loading"></img>
+              <Spinner
+                shape="threeDots"
+                color="#888"
+                loading
+                speed={1}
+                size={300}
+                transition={true}
+              />
             </div>
           )}
         </div>

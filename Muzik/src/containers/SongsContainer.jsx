@@ -36,7 +36,8 @@ export default function SongsContainer({
     event.preventDefault();
     setShowModal(true);
   }
-  async function handleRemove(songId, lat, lng) {
+  async function handleRemove(songId, lat, lng, event) {
+    event.stopPropagation();
     await deleteSavedSong(songId, lat, lng).then((data) => {
       if (data.ok) {
         setFavorites(data.results);
@@ -127,8 +128,13 @@ export default function SongsContainer({
                 <div>
                   <IoRemoveCircleOutline
                     className="delete-action"
-                    onClick={() =>
-                      handleRemove(favorite.songId, favorite.lat, favorite.lng)
+                    onClick={(event) =>
+                      handleRemove(
+                        favorite.songId,
+                        favorite.lat,
+                        favorite.lng,
+                        event
+                      )
                     }
                     title="Remove from favorites"
                   />
