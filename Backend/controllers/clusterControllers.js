@@ -51,7 +51,7 @@ export async function getTopSongs({lat, lng, zoom}) {
   const songLimit = 5
   try {
     const topSongs = await prisma.$queryRaw`
-      SELECT 
+      SELECT
         s.id AS id,
         s.title AS title,
         s.artist AS artist,
