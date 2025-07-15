@@ -65,7 +65,7 @@ input[type="text"] {
   width: 40rem;
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 5%;
   font-size: 1.5rem;
 }
 label {
@@ -325,4 +325,10 @@ label {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+.map-switch{
+  display: flex;
+  justify-content: center;
+  gap: 20rem;
+  margin-top: 0.6rem;
 }
