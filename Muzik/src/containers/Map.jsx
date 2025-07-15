@@ -1,4 +1,3 @@
-import { useLocation } from "react-router-dom";
 import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import useFetchClusters from "../hooks/useFetchClusters";
 import useDebounce from "../hooks/useDebounce";
@@ -47,7 +46,6 @@ function ClusteredMap({ clusters, onClusterClick }) {
   ));
 }
 export default function MapPage({ userLat, userLng, onSave, favorites }) {
-  const location = useLocation();
   const [isLoaded, setIsLoaded] = useState(false);
   const {
     handleMapIdle,
@@ -62,7 +60,6 @@ export default function MapPage({ userLat, userLng, onSave, favorites }) {
   const debouncedMapIdle = useDebounce(handleMapIdle, 400);
   return (
     <>
-      <h3>Welcome {location.state.username}</h3>
       <APIProvider
         apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
         onLoad={() => {
@@ -71,7 +68,7 @@ export default function MapPage({ userLat, userLng, onSave, favorites }) {
         }}
       >
         {isLoaded ? (
-          <div style={{ height: "75vh", width: "100%" }}>
+          <div style={{ height: "83vh", width: "100%" }}>
             <Map
               defaultZoom={2}
               minZoom={2}

@@ -1,8 +1,8 @@
 import SongsContainer from "./SongsContainer";
-import MapPage from "./Map";
 import Admin from "../pages/Admin";
 import { getUserFavorites, saveSong } from "../api";
 import { useState, useEffect } from "react";
+import MapSwitch from "../components/MapSwitch";
 export default function ContentContainer({ currentSection, userLat, userLng }) {
   const [favorites, setFavorites] = useState([]);
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function ContentContainer({ currentSection, userLat, userLng }) {
       lng,
       song.title,
       song.artist,
-      song.coverUrl,
+      song.coverUrl
     ).then((data) => {
       if (data.ok) {
         setFavorites(data.results);
@@ -33,7 +33,7 @@ export default function ContentContainer({ currentSection, userLat, userLng }) {
         />
       )}
       {currentSection === "map" && (
-        <MapPage
+        <MapSwitch
           userLat={userLat}
           userLng={userLng}
           onSave={handleAddToFavorite}
