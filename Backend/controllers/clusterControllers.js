@@ -1,8 +1,6 @@
 import prisma from "../PrismaClient.js";
 import {
-  getBucketSizeFromZoom,
-  getCoordBounds,
-  roundedCalculator,
+  getBucketSizeFromZoom
 } from "../utils/ZoomHelper.js";
 export async function getClustersData({
   latMin,
@@ -11,48 +9,51 @@ export async function getClustersData({
   lngMax,
   zoom,
 }) {
-  const centerLat = ((latMin + latMax)/2)
-  const {bucketLat, bucketLng} = getBucketSizeFromZoom(zoom, centerLat);
-  const boundBox = getCoordBounds(latMax, lngMax, latMin, lngMin);
+  const centerLat = ((latMin + latMax) / 2)
+  const { bucketLat, bucketLng } = getBucketSizeFromZoom(zoom, centerLat);
   if (!bucketLat || !bucketLng) throw new Error("Something went wrong.");
   try {
-    const savedSongs = await prisma.savedSong.findMany({
-      where: boundBox,
-    });
-    const clusterMap = {};
-    for (const song of savedSongs) {
-      const roundedLat = roundedCalculator(song.lat, bucketLat);
-      const roundedLng = roundedCalculator(song.lng, bucketLng);
-      const key = `${roundedLat}_${roundedLng}`;
-      if (clusterMap[key]) {
-        clusterMap[key].count++;
-      } else {
-        clusterMap[key] = {
-          lat: roundedLat,
-          lng: roundedLng,
-          count: 1,
-        };
-      }
-    }
-    return Object.values(clusterMap);
+    const clusters = await prisma.$queryRaw`
+      SELECT
+        FLOOR (ss.lat/${bucketLat}) AS lat_idx,
+        FLOOR (ss.lng/${bucketLng}) AS lng_idx,
+        AVG (ss.lat) AS avg_lat,
+        AVG (ss.lng) AS avg_lng,
+        COUNT(*) AS count
+      FROM
+        "SavedSong" ss
+      WHERE
+        ss.lat BETWEEN ${latMin} AND ${latMax}
+        AND ss.lng BETWEEN ${lngMin} AND ${lngMax}
+      GROUP BY lat_idx, lng_idx
+    `
+    const results = clusters.map((cluster) => ({
+      id: `${cluster.lat_idx}_${cluster.lng_idx}`,
+      lat: Number(cluster.avg_lat),
+      lng: Number(cluster.avg_lng),
+      count: Number(cluster.count),
+      latBucket: Number(cluster.lat_idx),
+      lngBucket: Number(cluster.lng_idx)
+    }))
+    return results
   } catch (err) {
     throw new Error("Error getting clusters data");
   }
 }
 export async function getTopSongs({ lat, lng, zoom }) {
-  const {bucketLat, bucketLng} = getBucketSizeFromZoom(zoom);
-  if (!bucketLat|| !bucketLng)
+  const centerLat = ((latMax + latMin) / 2)
+  const { bucketLat, bucketLng } = getBucketSizeFromZoom(zoom, centerLat);
+  if (!bucketLat || !bucketLng)
     throw new Error("Something went wrong");
-  const latMin = lat-bucketLat;
-  const latMax = lat + bucketLat;
-  const lngMin = lng -bucketLng;
-  const lngMax = lng + bucketLng;
-  const songLimit = 30
-  console.log("Coords of visible boundary: ", latMax, latMin, lngMax, lngMin)
-  console.log("bucketCoords: ", bucketLat, bucketLng)
+  const latMin = lat * bucketLat;
+  const latMax = latMin + bucketLat;
+  const lngMin = lng * bucketLng;
+  const lngMax = lngMin + bucketLng;
+  const songLimit = 5
+
   try {
     const topSongs = await prisma.$queryRaw`
-      SELECT 
+      SELECT
         s.id AS id,
         s.title AS title,
         s.artist AS artist,
