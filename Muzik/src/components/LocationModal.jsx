@@ -19,7 +19,7 @@ export default function MarkerModal({
     return favorites.some(
       (favorite) =>
         favorite.song.title === song.title &&
-        favorite.song.artist === song.artist,
+        favorite.song.artist === song.artist
     );
   }
   return (

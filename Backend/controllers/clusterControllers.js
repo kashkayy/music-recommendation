@@ -1,8 +1,6 @@
 import prisma from "../PrismaClient.js";
 import {
   getBucketSizeFromZoom,
-  getCoordBounds,
-  roundedCalculator,
 } from "../utils/ZoomHelper.js";
 export async function getClustersData({
   latMin,
@@ -13,43 +11,44 @@ export async function getClustersData({
 }) {
   const centerLat = ((latMin + latMax)/2)
   const {bucketLat, bucketLng} = getBucketSizeFromZoom(zoom, centerLat);
-  const boundBox = getCoordBounds(latMax, lngMax, latMin, lngMin);
   if (!bucketLat || !bucketLng) throw new Error("Something went wrong.");
   try {
-    const savedSongs = await prisma.savedSong.findMany({
-      where: boundBox,
-    });
-    const clusterMap = {};
-    for (const song of savedSongs) {
-      const roundedLat = roundedCalculator(song.lat, bucketLat);
-      const roundedLng = roundedCalculator(song.lng, bucketLng);
-      const key = `${roundedLat}_${roundedLng}`;
-      if (clusterMap[key]) {
-        clusterMap[key].count++;
-      } else {
-        clusterMap[key] = {
-          lat: roundedLat,
-          lng: roundedLng,
-          count: 1,
-        };
-      }
-    }
-    return Object.values(clusterMap);
+    const clusters = await prisma.$queryRaw`
+      SELECT
+        FLOOR (ss.lat/CAST(${bucketLat} AS DOUBLE PRECISION)) AS lat_idx,
+        FLOOR (ss.lng/CAST(${bucketLng} AS DOUBLE PRECISION)) AS lng_idx,
+        AVG (ss.lat) AS avg_lat,
+        AVG (ss.lng) AS avg_lng,
+        COUNT(*) AS count
+      FROM
+        "SavedSong" ss
+      WHERE
+        ss.lat BETWEEN CAST (${latMin} AS DOUBLE PRECISION) AND CAST(${latMax} AS DOUBLE PRECISION)
+        AND ss.lng BETWEEN CAST (${lngMin} AS DOUBLE PRECISION) AND CAST(${lngMax} AS DOUBLE PRECISION)
+      GROUP BY lat_idx, lng_idx
+    `
+    const results = clusters.map((cluster) => ({
+      id: `${cluster.lat_idx}_${cluster.lng_idx}`,
+      lat: Number(cluster.avg_lat),
+      lng: Number(cluster.avg_lng),
+      count: Number(cluster.count),
+      latBucket: Number(cluster.lat_idx),
+      lngBucket: Number(cluster.lng_idx)
+    }))
+    return results
   } catch (err) {
     throw new Error("Error getting clusters data");
   }
 }
-export async function getTopSongs({ lat, lng, zoom }) {
-  const {bucketLat, bucketLng} = getBucketSizeFromZoom(zoom);
-  if (!bucketLat|| !bucketLng)
-    throw new Error("Something went wrong");
-  const latMin = lat-bucketLat;
-  const latMax = lat + bucketLat;
-  const lngMin = lng -bucketLng;
-  const lngMax = lng + bucketLng;
-  const songLimit = 30
-  console.log("Coords of visible boundary: ", latMax, latMin, lngMax, lngMin)
-  console.log("bucketCoords: ", bucketLat, bucketLng)
+export async function getTopSongs({lat, lng, zoom}) {
+  const { bucketLat, bucketLng } = getBucketSizeFromZoom(zoom)
+  if (!bucketLat || !bucketLng)
+    throw new Error("Invalid bucket sizes");
+  const latMin = lat - bucketLat/2;
+  const latMax = lat + bucketLat/2;
+  const lngMin = lng - bucketLng/2;
+  const lngMax = lng + bucketLng/2;
+  const songLimit = 5
   try {
     const topSongs = await prisma.$queryRaw`
       SELECT 
@@ -63,13 +62,13 @@ export async function getTopSongs({ lat, lng, zoom }) {
       JOIN
         "Song" s ON ss."songId" = s.id
       WHERE
-        ss.lat BETWEEN ${latMin} AND ${latMax}
-        AND ss.lng BETWEEN ${lngMin} AND ${lngMax}
+        ss.lat BETWEEN CAST(${latMin} AS DOUBLE PRECISION) AND CAST(${latMax} AS DOUBLE PRECISION)
+        AND ss.lng BETWEEN CAST(${lngMin} AS DOUBLE PRECISION) AND CAST(${lngMax} AS DOUBLE PRECISION)
       GROUP BY
         s.id, s.title, s.artist, s."coverUrl"
       ORDER BY
         save_count DESC
-      LIMIT ${songLimit}
+      LIMIT CAST(${songLimit} AS INT)
       `
     return topSongs
   } catch (err) {
