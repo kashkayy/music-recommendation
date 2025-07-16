@@ -1,14 +1,13 @@
 import express from "express";
 import { authorizeAccess, authenticateToken } from "../middleware/authMiddleware.js";
 import {
-  getAllSongs,
   getTopTrendingSongs,
   getTopUsers,
   toggleAdmin,
   toggleBan,
 } from "../controllers.js";
 import { Role } from "../generated/prisma/index.js";
-import { getAllUsers} from "../controllers/adminControllers.js";
+import { getAllUsers, getAllSongs} from "../controllers/adminControllers.js";
 import { badReq, successRes } from "../utils/Response.js";
 const router = express.Router();
 router.get("/", authenticateToken, (req, res) => {
@@ -34,17 +33,15 @@ router.get(
   "/songs",
   authenticateToken,
   async (req, res) => {
+    const userRole = req.user.role
+    const adminRegion = req.user.region
     try {
-      const songs = await getAllSongs();
+      const songs = await getAllSongs(adminRegion, userRole);
       res
         .status(200)
-        .json({
-          message: "Songs successfully fetched",
-          results: songs,
-          ok: true,
-        });
+        .json(successRes(songs));
     } catch (err) {
-      res.status(500).json({ message: "Error fetching all songs", ok: false });
+      res.status(500).json(badReq());
     }
   },
 );

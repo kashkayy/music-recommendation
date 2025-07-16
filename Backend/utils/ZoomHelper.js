@@ -11,3 +11,11 @@ export function getBucketSizeFromZoom(zoom, centerLat = 0) {
   const bucketLng = (bucketLat/ Math.cos(safePoint * Math.PI / 180))
   return { bucketLat, bucketLng }
 }
+export const regionZoom = 6
+export function regionCalculator(lat, lng){
+  const {bucketLat, bucketLng} = getBucketSizeFromZoom(regionZoom)
+  const lat_idx = Math.floor((lat/bucketLat))
+  const lng_idx = Math.floor((lng/bucketLng))
+  const region = `${lat_idx}_${lng_idx}_${regionZoom}`
+  return region
+}
