@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { fetchSearchResults } from "./utils/SpotifyRoutes.js";
 import { Role } from "./generated/prisma/index.js";
 import { regionCalculator } from "./utils/ZoomHelper.js";
-export async function createUser(username, password) {
+export async function createUser(username, password, userLat, userLng) {
   const existingUser = await prisma.user.findUnique({
     where: { username },
   });
@@ -11,15 +11,18 @@ export async function createUser(username, password) {
     throw new Error("Username already exists.");
   }
   try {
+    let userRegion = null
     const passwordhash = bcrypt.hashSync(password, 10);
+    if (userLat && userLng){userRegion = regionCalculator(userLat, userLng)}
     return await prisma.user.create({
       data: {
         username,
         passwordhash,
+        region: userRegion
       },
     });
   } catch (err) {
-    console.log("Error creating user: ", err);
+    throw new Error("Error creating user");
   }
 }
 export async function login(username, password) {
