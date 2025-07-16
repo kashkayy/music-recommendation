@@ -11,6 +11,7 @@ async function main() {
       username: "testuser1",
       passwordhash: bcrypt.hashSync("password123", 10),
       role: "admin",
+      region: `40_-73_6`
     },
   });
 
@@ -21,6 +22,7 @@ async function main() {
       username: "testuser2",
       passwordhash: bcrypt.hashSync("password123", 10),
       role: "user",
+      region:`33_-118_6`
     },
   });
   const songs = await fetchSeedSongs("5ABHKGoOzxkaa28ttQV9sE");

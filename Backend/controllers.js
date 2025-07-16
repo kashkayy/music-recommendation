@@ -205,13 +205,6 @@ export async function deleteSavedSong(songId, userId, lat, lng) {
     console.log("Error deleting song from favorites", err);
   }
 }
-export async function getAllUsers() {
-  try {
-    return await prisma.user.findMany();
-  } catch (err) {
-    console.log("Error fetching all users", err);
-  }
-}
 export async function getUserById(userId) {
   try {
     return await prisma.user.findUnique({

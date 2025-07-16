@@ -1,43 +1,38 @@
 import express from "express";
-import { checkRole, authenticateToken } from "../middleware/authMiddleware.js";
+import { authorizeAccess, authenticateToken } from "../middleware/authMiddleware.js";
 import {
   getAllSongs,
-  getSongById,
-  getAllUsers,
-  getUserById,
   getTopTrendingSongs,
   getTopUsers,
   toggleAdmin,
   toggleBan,
 } from "../controllers.js";
 import { Role } from "../generated/prisma/index.js";
+import { getAllUsers} from "../controllers/adminControllers.js";
+import { badReq, successRes } from "../utils/Response.js";
 const router = express.Router();
 router.get("/", authenticateToken, (req, res) => {
-  res.json({ isAdmin: req.user.role === Role.admin });
+  res.json({ isAdmin: (req.user.role === Role.admin || req.user.role === Role.regionAdmin)});
 });
 router.get(
   "/users",
   authenticateToken,
-  checkRole(Role.admin),
   async (req, res) => {
+    const userRole = req.user.role
+    const adminRegion = req.user.region
     try {
-      const users = await getAllUsers();
+      const users = await getAllUsers(adminRegion, userRole);
       res
         .status(200)
-        .json({
-          message: "Users fetched successfully",
-          results: users,
-          ok: true,
-        });
+        .json(successRes(users));
     } catch (err) {
-      res.status(500).json({ message: "Error fetching users", ok: false });
+      res.status(500).json(badReq());
     }
   },
 );
 router.get(
   "/songs",
   authenticateToken,
-  checkRole(Role.admin),
   async (req, res) => {
     try {
       const songs = await getAllSongs();
@@ -56,7 +51,6 @@ router.get(
 router.get(
   "/top/songs",
   authenticateToken,
-  checkRole(Role.admin),
   async (req, res) => {
     try {
       const trending = await getTopTrendingSongs();
@@ -77,7 +71,6 @@ router.get(
 router.get(
   "/top/users",
   authenticateToken,
-  checkRole(Role.admin),
   async (req, res) => {
     try {
       const users = await getTopUsers();
@@ -96,7 +89,6 @@ router.get(
 router.put(
   "/:userId/role-action",
   authenticateToken,
-  checkRole(Role.admin),
   async (req, res) => {
     const { userId } = req.params;
     try {
@@ -119,7 +111,6 @@ router.put(
 router.put(
   "/:userId/ban-action",
   authenticateToken,
-  checkRole(Role.admin),
   async (req, res) => {
     const { userId } = req.params;
     try {
