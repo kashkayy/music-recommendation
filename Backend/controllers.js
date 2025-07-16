@@ -2,6 +2,7 @@ import prisma from "./PrismaClient.js";
 import bcrypt from "bcrypt";
 import { fetchSearchResults } from "./utils/SpotifyRoutes.js";
 import { Role } from "./generated/prisma/index.js";
+import { regionCalculator } from "./utils/ZoomHelper.js";
 export async function createUser(username, password) {
   const existingUser = await prisma.user.findUnique({
     where: { username },
@@ -120,12 +121,14 @@ export async function createSavedSong(
 ) {
   try {
     const song = await findOrCreateSong(title, artist, coverUrl);
+    const songRegion = regionCalculator(userLat, userLng)
     const savedSong = await prisma.savedSong.create({
       data: {
         songId: song.id || songId,
         userId: userId,
         lat: userLat,
         lng: userLng,
+        region: songRegion
       },
     });
     await findOrCreateSongRanking(song.id || songId, userLat, userLng);
@@ -212,13 +215,6 @@ export async function getUserById(userId) {
     });
   } catch (err) {
     console.log("Error fetching user by id", err);
-  }
-}
-export async function getAllSongs() {
-  try {
-    return await prisma.song.findMany();
-  } catch (err) {
-    console.log("Error fetching all songs", err);
   }
 }
 export async function getSongById(songId) {
