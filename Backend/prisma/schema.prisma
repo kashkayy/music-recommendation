@@ -16,6 +16,7 @@ datasource db {
 enum Role{
   admin
   user
+  regionAdmin
 }
 model User{
   id                     Int                 @id @default(autoincrement())
@@ -27,6 +28,7 @@ model User{
   role                   Role                @default(user)
   isBanned               Boolean             @default(false)
   refreshToken           String?
+  region                 String?
 }
 model Song{
   id                     Int                 @id @default(autoincrement())
@@ -44,6 +46,7 @@ model SavedSong{
   userId                 Int
   lat                    Float
   lng                    Float
+  region                 String?
 
   @@index([lat, lng])
   @@unique([songId, userId])
