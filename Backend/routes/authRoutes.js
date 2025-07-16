@@ -7,23 +7,20 @@ import {
 } from "../controllers.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { badReq, successRes } from "../utils/Response.js";
 dotenv.config();
 const router = express.Router();
 router.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, userLat, userLng} = req.body;
   try {
-    const newUser = await createUser(username, password);
+    const newUser = await createUser(username, password, userLat, userLng);
     res
       .status(201)
-      .json({ message: "User created successfully", data: newUser, ok: true });
+      .json(successRes(newUser));
   } catch (error) {
     res
       .status(500)
-      .json({
-        message: "Failed to create user",
-        error: error.message,
-        ok: false,
-      });
+      .json(badReq("Failed to create user"));
   }
 });
 router.post("/login", async (req, res) => {

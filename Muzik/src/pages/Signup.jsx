@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { register } from "../api.js";
 import { Link, useNavigate } from "react-router-dom";
 export default function SignUp() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [userLat, setUserLat] = useState(null);
+  const [userLng, setUserLng] = useState(null);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setUserLat(position.coords.latitude);
+        setUserLng(position.coords.longitude);
+      });
+    } else {
+      setError("Geolocation is not supported by your browser");
+    }
+  }, []);
   async function handleCreateUser(newUser) {
     try {
       const response = await register(newUser);
@@ -19,10 +32,11 @@ export default function SignUp() {
   }
   function handleSubmit(event) {
     event.preventDefault();
-    const user = { username, password };
+    const user = { username, password, userLat, userLng };
     handleCreateUser(user);
     setUsername("");
     setPassword("");
+    if (error) alert(error);
   }
   return (
     <>

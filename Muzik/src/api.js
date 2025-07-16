@@ -1,11 +1,11 @@
 import { getAuthHeaders } from "./utils/getHeaders";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 export async function register(newUser) {
-  const { username, password } = newUser;
+  const { username, password, userLat, userLng } = newUser;
   const res = await fetch(`${BASE_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, userLat, userLng}),
   });
   const data = await res.json();
   return data;
