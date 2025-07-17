@@ -1,77 +1,74 @@
 import prisma from "../PrismaClient.js";
 import { Role } from "../generated/prisma/index.js";
-export async function getSongRegion(songId){
+export async function getSongRegion(songId) {
   const song = await prisma.savedSong.findUnique({
-    where : {id: Number(songId)}
-  })
-  if(!song){
-    throw new Error("Song does not exist")
-  }else{
-    return song.region
+    where: { id: Number(songId) },
+  });
+  if (!song) {
+    throw new Error("Song does not exist");
+  } else {
+    return song.region;
   }
 }
 
-export async function getUserRegion(userId){
+export async function getUserRegion(userId) {
   const user = await prisma.user.findUnique({
-    where : {id: Number(userId)}
-  })
-  if(!user){
-    throw new Error("User does not exist")
-  }else{
-    return user.region
+    where: { id: Number(userId) },
+  });
+  if (!user) {
+    throw new Error("User does not exist");
+  } else {
+    return user.region;
   }
 }
 
 export async function getAllUsers(adminRegion, userRole) {
-  if(userRole === Role.user){
-      throw new Error("Forbidden: not an admin")
-    }
+  if (userRole === Role.user) {
+    throw new Error("Forbidden: not an admin");
+  }
   try {
-    if(userRole === Role.admin){
+    if (userRole === Role.admin) {
       return await prisma.user.findMany({
         where: {
-          OR: [
-            {role: Role.user},
-            {role: Role.regionAdmin},
-          ]
-        }
+          OR: [{ role: Role.user }, { role: Role.regionAdmin }],
+        },
       });
     }
-    if(userRole === Role.regionAdmin){
+    if (userRole === Role.regionAdmin) {
       return await prisma.user.findMany({
-        where: {region: adminRegion, role: Role.user}
-      })
+        where: { region: adminRegion, role: Role.user },
+      });
     }
   } catch (err) {
-    throw new Error("Error fetching users")
+    throw new Error("Error fetching users");
   }
 }
 
-export async function getAllSongs(adminRegion, userRole){
-  if(userRole === Role.user){
-      throw new Error("Forbidden: not an admin")
+export async function getAllSongs(adminRegion, userRole) {
+  if (userRole === Role.user) {
+    throw new Error("Forbidden: not an admin");
+  }
+  try {
+    if (userRole === Role.admin) {
+      return await prisma.savedSong.findMany();
     }
-  try{
-    if(userRole === Role.admin){
-      return await prisma.savedSong.findMany()
-    }
-    if(userRole === Role.regionAdmin){
+    if (userRole === Role.regionAdmin) {
       return await prisma.savedSong.findMany({
-        where: {region: adminRegion}
-      })
+        where: { region: adminRegion },
+      });
     }
-  }catch(error){
-    throw new Error("Error fetching songs for admin")
+  } catch (error) {
+    throw new Error("Error fetching songs for admin");
   }
 }
 
-export async function getTopSongs(adminRegion, userRole){
-  if(userRole === Role.user){
-      throw new Error("Forbidden: not an admin")
-    }
-  try{
-    if(userRole === Role.admin){
-      const songLimit = 25
+export async function getTopSongs(adminRegion, userRole) {
+  if (userRole === Role.user) {
+    throw new Error("Forbidden: not an admin");
+  }
+  try {
+    if (userRole === Role.admin) {
+      const songLimit = 25;
       const globalTopSongs = await prisma.$queryRaw`
       SELECT
         s.id AS id,
@@ -88,11 +85,11 @@ export async function getTopSongs(adminRegion, userRole){
       ORDER BY
         saves DESC
       LIMIT CAST(${songLimit} AS INT)
-      `
-      return globalTopSongs
+      `;
+      return globalTopSongs;
     }
-    if(userRole === Role.regionAdmin){
-      const songLimit = 10
+    if (userRole === Role.regionAdmin) {
+      const songLimit = 10;
       const regionTopSongs = await prisma.$queryRaw`
       SELECT
         s.id AS id,
@@ -111,21 +108,21 @@ export async function getTopSongs(adminRegion, userRole){
       ORDER BY
         saves DESC
       LIMIT CAST(${songLimit} AS INT)
-      `
-      return regionTopSongs
+      `;
+      return regionTopSongs;
     }
-  }catch(error){
-    throw new Error("Error fetching top songs")
+  } catch (error) {
+    throw new Error("Error fetching top songs");
   }
 }
 
-export async function getTopUsers(adminRegion, userRole){
-  if(userRole === Role.user){
-      throw new Error("Forbidden: not an admin")
-    }
-  try{
-    if(userRole === Role.admin){
-      const userLimit = 25
+export async function getTopUsers(adminRegion, userRole) {
+  if (userRole === Role.user) {
+    throw new Error("Forbidden: not an admin");
+  }
+  try {
+    if (userRole === Role.admin) {
+      const userLimit = 25;
       const globalTopUsers = await prisma.$queryRaw`
       SELECT
         u.id AS id,
@@ -141,11 +138,11 @@ export async function getTopUsers(adminRegion, userRole){
       ORDER BY
         "savedSongs" DESC
       LIMIT CAST(${userLimit} AS INT)
-      `
-      return globalTopUsers
+      `;
+      return globalTopUsers;
     }
-    if(userRole === Role.regionAdmin){
-      const userLimit = 10
+    if (userRole === Role.regionAdmin) {
+      const userLimit = 10;
       const regionTopUsers = await prisma.$queryRaw`
       SELECT
         u.id AS id,
@@ -163,10 +160,28 @@ export async function getTopUsers(adminRegion, userRole){
       ORDER BY
         "savedSongs" DESC
       LIMIT CAST(${userLimit} AS INT)
-      `
-      return regionTopUsers
+      `;
+      return regionTopUsers;
     }
-  }catch(error){
-    throw new Error("Error fetching top users")
+  } catch (error) {
+    throw new Error("Error fetching top users");
+  }
+}
+
+export async function updateBanStatus(userId, newStatus, userRole) {
+  try {
+    if (userRole === Role.regionAdmin) {
+      return await prisma.user.update({
+        where: { id: Number(userId), role: Role.user },
+        data: { isBanned: JSON.parse(newStatus.toLowerCase()) },
+      });
+    } else if (userRole === Role.admin) {
+      return await prisma.user.update({
+        where: { id: Number(userId) },
+        data: { isBanned: JSON.parse(newStatus.toLowerCase()) },
+      });
+    }
+  } catch (error) {
+    throw new Error("Unauthorized ban action");
   }
 }

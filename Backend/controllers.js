@@ -11,14 +11,16 @@ export async function createUser(username, password, userLat, userLng) {
     throw new Error("Username already exists.");
   }
   try {
-    let userRegion = null
+    let userRegion = null;
     const passwordhash = bcrypt.hashSync(password, 10);
-    if (userLat && userLng){userRegion = regionCalculator(userLat, userLng)}
+    if (userLat && userLng) {
+      userRegion = regionCalculator(userLat, userLng);
+    }
     return await prisma.user.create({
       data: {
         username,
         passwordhash,
-        region: userRegion
+        region: userRegion,
       },
     });
   } catch (err) {
@@ -37,7 +39,7 @@ export async function login(username, password) {
     }
     const passwordIsCorrect = await bcrypt.compare(
       password,
-      getUser.passwordhash,
+      getUser.passwordhash
     );
     if (!passwordIsCorrect) {
       return;
@@ -57,19 +59,7 @@ export async function checkRefreshToken(userId, refreshToken) {
     });
   } catch (err) {}
 }
-export async function checkStatus(username) {
-  try {
-    const status = await prisma.user.findUnique({
-      where: {
-        username: username,
-        isBanned: false,
-      },
-    });
-    return status;
-  } catch (err) {
-    console.log("User is BANNED", err);
-  }
-}
+
 export async function getTrendingSongs(lat, lng) {
   return prisma.songRanking.findMany({
     where: {
@@ -120,18 +110,18 @@ export async function createSavedSong(
   artist,
   coverUrl,
   userLat,
-  userLng,
+  userLng
 ) {
   try {
     const song = await findOrCreateSong(title, artist, coverUrl);
-    const songRegion = regionCalculator(userLat, userLng)
+    const songRegion = regionCalculator(userLat, userLng);
     const savedSong = await prisma.savedSong.create({
       data: {
         songId: song.id || songId,
         userId: userId,
         lat: userLat,
         lng: userLng,
-        region: songRegion
+        region: songRegion,
       },
     });
     await findOrCreateSongRanking(song.id || songId, userLat, userLng);
@@ -281,21 +271,5 @@ export async function toggleAdmin(userId) {
     return updatedUser;
   } catch (err) {
     console.log("Cannot change role at this time", err);
-  }
-}
-export async function toggleBan(userId) {
-  try {
-    const getUser = await prisma.user.findUnique({
-      where: { id: Number(userId) },
-    });
-    if (!getUser) return "Try again";
-    const newStatus = getUser.isBanned ? false : true;
-    const updatedUser = prisma.user.update({
-      where: { id: Number(userId) },
-      data: { isBanned: newStatus },
-    });
-    return updatedUser;
-  } catch (err) {
-    throw err;
   }
 }
