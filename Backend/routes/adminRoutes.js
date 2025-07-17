@@ -1,13 +1,11 @@
 import express from "express";
 import { authorizeAccess, authenticateToken } from "../middleware/authMiddleware.js";
 import {
-  getTopTrendingSongs,
-  getTopUsers,
   toggleAdmin,
   toggleBan,
 } from "../controllers.js";
 import { Role } from "../generated/prisma/index.js";
-import { getAllUsers, getAllSongs} from "../controllers/adminControllers.js";
+import { getAllUsers, getAllSongs, getTopSongs, getTopUsers} from "../controllers/adminControllers.js";
 import { badReq, successRes } from "../utils/Response.js";
 const router = express.Router();
 router.get("/", authenticateToken, (req, res) => {
@@ -46,40 +44,36 @@ router.get(
   },
 );
 router.get(
-  "/top/songs",
+  "/top/saved-songs",
   authenticateToken,
   async (req, res) => {
+    const adminRegion = req.user.region
+    const userRole = req.user.role
     try {
-      const trending = await getTopTrendingSongs();
+      const trending = await getTopSongs(adminRegion, userRole);
       res
         .status(200)
-        .json({
-          message: "Successfully fetched top 10",
-          results: trending,
-          ok: true,
-        });
+        .json(successRes(trending));
     } catch (err) {
       res
         .status(500)
-        .json({ message: "Error fetching top 10 trending songs", ok: false });
+        .json(badReq("Error fetching top saved songs"));
     }
   },
 );
 router.get(
-  "/top/users",
+  "/top/active-users",
   authenticateToken,
   async (req, res) => {
+    const adminRegion = req.user.region
+    const userRole = req.user.role
     try {
-      const users = await getTopUsers();
+      const users = await getTopUsers(adminRegion, userRole);
       res
         .status(200)
-        .json({
-          message: "Successfully fetched top users",
-          results: users,
-          ok: true,
-        });
+        .json(successRes(users));
     } catch (err) {
-      res.status(500).json({ message: "Error fetching top users", ok: false });
+      res.status(500).json(badReq("Error fetching top active users"));
     }
   },
 );
