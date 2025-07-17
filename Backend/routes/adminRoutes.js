@@ -2,14 +2,13 @@ import express from "express";
 import { authorizeAccess, authenticateToken } from "../middleware/authMiddleware.js";
 import {
   toggleAdmin,
-  toggleBan,
 } from "../controllers.js";
 import { Role } from "../generated/prisma/index.js";
-import { getAllUsers, getAllSongs, getTopSongs, getTopUsers} from "../controllers/adminControllers.js";
+import { getAllUsers, getAllSongs, getTopSongs, getTopUsers, getUserRegion, updateBanStatus } from "../controllers/adminControllers.js";
 import { badReq, successRes } from "../utils/Response.js";
 const router = express.Router();
 router.get("/", authenticateToken, (req, res) => {
-  res.json({ isAdmin: (req.user.role === Role.admin || req.user.role === Role.regionAdmin)});
+  res.json({ isAdmin: (req.user.role === Role.admin || req.user.role === Role.regionAdmin) });
 });
 router.get(
   "/users",
@@ -100,24 +99,22 @@ router.put(
   },
 );
 router.put(
-  "/:userId/ban-action",
+  "/ban/:userId",
   authenticateToken,
+  authorizeAccess((req) => getUserRegion(req.params.userId)),
   async (req, res) => {
     const { userId } = req.params;
+    const { newStatus } = req.body
+    const userRole = req.user.role
     try {
-      await toggleBan(userId);
-      const updated = await getAllUsers();
+      const user = await updateBanStatus(userId, newStatus, userRole);
       res
         .status(200)
-        .json({
-          message: "Successfully changed status",
-          results: updated,
-          ok: true,
-        });
+        .json(successRes(user));
     } catch (err) {
       res
         .status(500)
-        .json({ message: "Cannot perform action at this time", ok: false });
+        .json(badReq("Cannot perform ban-action at this time"));
     }
   },
 );
