@@ -22,6 +22,18 @@ export async function getUserRegion(userId) {
   }
 }
 
+export async function getUserRole(userId) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: Number(userId),
+    },
+  });
+  if (!user) {
+    throw new Error("User does not exist");
+  } else {
+    return user.role;
+  }
+}
 export async function getAllUsers(adminRegion, userRole) {
   try {
     if (userRole === Role.admin) {
@@ -172,4 +184,18 @@ export async function updateBanStatus(userId, newStatus, userRole) {
   } catch (error) {
     throw new Error("Unauthorized ban action");
   }
+}
+
+export async function promoteUser(userId, newRole) {
+  const user = await prisma.user.update({
+    where: { id: Number(userId) },
+    data: { role: newRole },
+    select: {
+      id: true,
+      username: true,
+      role: true,
+      region: true,
+    },
+  });
+  return user;
 }

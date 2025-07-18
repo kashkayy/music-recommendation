@@ -4,7 +4,6 @@ import {
   authenticateToken,
   validateAdminRole,
 } from "../middleware/authMiddleware.js";
-import { toggleAdmin } from "../controllers.js";
 import { Role } from "../generated/prisma/index.js";
 import {
   getAllUsers,
@@ -13,8 +12,11 @@ import {
   getTopUsers,
   getUserRegion,
   updateBanStatus,
+  promoteUser,
+  getUserRole,
 } from "../controllers/adminControllers.js";
 import { badReq, successRes } from "../utils/Response.js";
+import { canPromote } from "../utils/AdminHelper.js";
 const router = express.Router();
 router.get("/", authenticateToken, (req, res) => {
   res.json({
@@ -71,22 +73,31 @@ router.get(
     }
   }
 );
-router.put("/:userId/role-action", authenticateToken, async (req, res) => {
-  const { userId } = req.params;
-  try {
-    await toggleAdmin(userId);
-    const updated = await getAllUsers();
-    res.status(200).json({
-      message: "Successfully changed role",
-      results: updated,
-      ok: true,
-    });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Cannot perform action at this time", ok: false });
+router.put(
+  "/role-promote/:userId",
+  authenticateToken,
+  validateAdminRole,
+  authorizeAccess((req) => getUserRegion(req.params.userId)),
+  async (req, res) => {
+    const { userId } = req.params;
+    const reqRole = req.user.role;
+    const reqRegion = req.user.region;
+    const { newRole } = req.body;
+    const userRole = await getUserRole(userId);
+    const userRegion = await getUserRegion(userId);
+    try {
+      if (!canPromote(reqRole, userRole, reqRegion, userRegion, newRole)) {
+        return res
+          .status(403)
+          .json(badReq("You are not allowed to promote this user"));
+      }
+      const user = await promoteUser(userId, newRole);
+      res.status(200).json(successRes(user));
+    } catch (err) {
+      res.status(500).json(badReq("Cannot update user role at the time."));
+    }
   }
-});
+);
 router.put(
   "/ban/:userId",
   authenticateToken,
