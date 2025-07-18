@@ -29,7 +29,7 @@ export async function getUserRole(userId) {
     },
   });
   if (!user) {
-    throw new Error("User does not exist");
+    return "User does not exist";
   } else {
     return user.role;
   }
@@ -187,15 +187,58 @@ export async function updateBanStatus(userId, newStatus, userRole) {
 }
 
 export async function promoteUser(userId, newRole) {
-  const user = await prisma.user.update({
-    where: { id: Number(userId) },
-    data: { role: newRole },
-    select: {
-      id: true,
-      username: true,
-      role: true,
-      region: true,
-    },
-  });
-  return user;
+  try {
+    const user = await prisma.user.update({
+      where: { id: Number(userId) },
+      data: { role: newRole },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        region: true,
+      },
+    });
+    return user;
+  } catch (error) {
+    throw new Error("Unauthorized attempt to promote user");
+  }
+}
+
+export async function demoteUser(userId) {
+  try {
+    const user = await prisma.user.update({
+      where: { id: Number(userId) },
+      data: { role: Role.user },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        region: true,
+      },
+    });
+    return user;
+  } catch (error) {
+    throw new Error("Unauthorized attempt to demote user");
+  }
+}
+
+export async function getUserPlaylist(userId, reqRole) {
+  try {
+    if (reqRole === Role.admin || reqRole === Role.regionAdmin) {
+      const favorites = await prisma.savedSong.findFirst({
+        where: { userId: Number(userId) },
+        select: { song: true },
+      });
+      if (!favorites) {
+        return "This user's playlist is empty";
+      } else {
+        return favorites;
+      }
+    }
+  } catch (error) {
+    if (error) {
+      return error;
+    }
+    throw new Error("Unauthorized attempt to access user playlist");
+  }
 }

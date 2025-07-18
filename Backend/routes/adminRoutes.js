@@ -14,9 +14,11 @@ import {
   updateBanStatus,
   promoteUser,
   getUserRole,
+  demoteUser,
+  getUserPlaylist,
 } from "../controllers/adminControllers.js";
 import { badReq, successRes } from "../utils/Response.js";
-import { canPromote } from "../utils/AdminHelper.js";
+import { canDemote, canPromote } from "../utils/AdminHelper.js";
 const router = express.Router();
 router.get("/", authenticateToken, (req, res) => {
   res.json({
@@ -86,6 +88,9 @@ router.put(
     const userRole = await getUserRole(userId);
     const userRegion = await getUserRegion(userId);
     try {
+      if (userRole === newRole) {
+        return res.status(403).json(badReq(`User is already ${newRole}`));
+      }
       if (!canPromote(reqRole, userRole, reqRegion, userRegion, newRole)) {
         return res
           .status(403)
@@ -94,7 +99,32 @@ router.put(
       const user = await promoteUser(userId, newRole);
       res.status(200).json(successRes(user));
     } catch (err) {
-      res.status(500).json(badReq("Cannot update user role at the time."));
+      res.status(500).json(badReq("Cannot update user role at this time"));
+    }
+  }
+);
+router.put(
+  "/role-demote/:userId",
+  authenticateToken,
+  validateAdminRole,
+  authorizeAccess((req) => getUserRegion(req.params.userId)),
+  async (req, res) => {
+    const { userId } = req.params;
+    const reqRole = req.user.role;
+    const userRole = await getUserRole(userId);
+    try {
+      if (userRole === Role.user) {
+        return res.status(403).json(badReq("User has already been demoted"));
+      }
+      if (!canDemote(reqRole, userRole)) {
+        return res
+          .status(403)
+          .json(badReq("You are not allowed to demote this user"));
+      }
+      const user = await demoteUser(userId);
+      return res.status(200).json(successRes(user));
+    } catch (error) {
+      return res.status(500).json(badReq(`${error}`));
     }
   }
 );
@@ -112,6 +142,28 @@ router.put(
       res.status(200).json(successRes(user));
     } catch (err) {
       res.status(500).json(badReq("Cannot perform ban-action at this time"));
+    }
+  }
+);
+router.get(
+  "/user-favorites/:userId",
+  authenticateToken,
+  validateAdminRole,
+  authorizeAccess((req) => getUserRegion(req.params.userId)),
+  async (req, res) => {
+    const { userId } = req.params;
+    const reqRole = req.user.role;
+    const userRole = await getUserRole(userId);
+    try {
+      if (userRole === reqRole) {
+        return res
+          .status(403)
+          .json(badReq("Not permitted to access user's playlist"));
+      }
+      const favorites = await getUserPlaylist(userId, reqRole);
+      return res.status(200).json(successRes(favorites));
+    } catch (error) {
+      return res.status(500).json(badReq(`${error}`));
     }
   }
 );
