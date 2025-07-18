@@ -11,7 +11,7 @@ async function main() {
       username: "testuser1",
       passwordhash: bcrypt.hashSync("password123", 10),
       role: "admin",
-      region: `40_-73_6`
+      region: `40_-73_6`,
     },
   });
 
@@ -22,7 +22,7 @@ async function main() {
       username: "testuser2",
       passwordhash: bcrypt.hashSync("password123", 10),
       role: "user",
-      region:`33_-118_6`
+      region: `33_-118_6`,
     },
   });
   const songs = await fetchSeedSongs("5ABHKGoOzxkaa28ttQV9sE");
@@ -54,6 +54,7 @@ async function main() {
         userId: testUser1.id,
         lat: defaultLat + Math.random() * 5,
         lng: defaultLng + Math.random() * 5,
+        region: "40_-73_6",
       },
     });
   }
@@ -64,6 +65,7 @@ async function main() {
         userId: testUser2.id,
         lat: defaultLat + 1.0 + Math.random() * 5,
         lng: defaultLng + 1.0 + Math.random() * 5,
+        region: "33_-118_6",
       },
     });
   }
