@@ -20,3 +20,9 @@ export function canPromote(reqRole, userRole, reqRegion, userRegion, newRole) {
 
   return false;
 }
+export function canDemote(reqRole, userRole) {
+  if (reqRole === Role.admin) {
+    return userRole !== Role.admin;
+  }
+  return false;
+}
