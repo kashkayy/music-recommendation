@@ -38,3 +38,13 @@ export function authorizeAccess(getResourceRegion) {
     }
   };
 }
+
+export function validateAdminRole(req, res, next) {
+  if (req.user.role === Role.user) {
+    return res
+      .status(403)
+      .json(badReq("User is not permitted access to this resource"));
+  } else {
+    return next();
+  }
+}

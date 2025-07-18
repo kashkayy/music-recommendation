@@ -28,7 +28,9 @@ model User{
   role                   Role                @default(user)
   isBanned               Boolean             @default(false)
   refreshToken           String?
-  region                 String?
+  region                 String
+
+  @@index([region])
 }
 model Song{
   id                     Int                 @id @default(autoincrement())
@@ -46,10 +48,11 @@ model SavedSong{
   userId                 Int
   lat                    Float
   lng                    Float
-  region                 String?
+  region                 String
 
   @@index([lat, lng])
   @@unique([songId, userId])
+  @@index([region])
 }
 model SongRanking{
   id                     Int                 @id @default(autoincrement())

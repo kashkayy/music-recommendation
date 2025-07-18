@@ -5,6 +5,8 @@ import "./App.css";
 import Home from "./pages/Home";
 import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./auth/Protect";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <AuthProvider>
@@ -17,6 +19,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </AuthProvider>
   );
 }

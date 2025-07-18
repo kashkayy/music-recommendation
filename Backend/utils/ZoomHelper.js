@@ -11,12 +11,29 @@ export function getBucketSizeFromZoom(zoom, centerLat = 0) {
   const bucketLng = bucketLat / Math.cos((safePoint * Math.PI) / 180);
   return { bucketLat, bucketLng };
 }
+export function checkCoordsValue(coord, bucket) {
+  if (coord < 0) {
+    return Math.ceil(coord / bucket);
+  } else if (coord > 0) {
+    return Math.floor(coord / bucket);
+  }
+}
 // regionZoom represents zoom level at which each bucket is its own region.
 export const regionZoom = 6;
 export function regionCalculator(lat, lng) {
   const { bucketLat, bucketLng } = getBucketSizeFromZoom(regionZoom);
-  const lat_idx = Math.floor(lat / bucketLat);
-  const lng_idx = Math.floor(lng / bucketLng);
+  const lat_idx = checkCoordsValue(lat, bucketLat);
+  const lng_idx = checkCoordsValue(lng, bucketLng);
   const region = `${lat_idx}_${lng_idx}_${regionZoom}`;
   return region;
+}
+
+export function coordsWithinRange(lat, lng) {
+  const latMax = 90;
+  const latMin = -90;
+  const lngMax = 180;
+  const lngMin = -180;
+  const latWithin = lat >= latMin && lat <= latMax;
+  const lngWithin = lng >= lngMin && lng <= lngMax;
+  return latWithin && lngWithin;
 }

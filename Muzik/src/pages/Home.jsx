@@ -15,7 +15,20 @@ export default function Home() {
         },
         (error) => {
           setError(error.message);
-        },
+          fetch(
+            `https://api.ipgeolocation.io/ipgeo?apiKey=${
+              import.meta.env.VITE_IP_API_KEY
+            }`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              setUserLat(Number(data.latitude));
+              setUserLng(Number(data.longitude));
+            })
+            .catch((error) => {
+              setError(error.message);
+            });
+        }
       );
     } else {
       setError("Geolocation is not supported by your browser");

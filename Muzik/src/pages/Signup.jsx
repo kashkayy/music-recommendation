@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { register } from "../api.js";
 import { Link, useNavigate } from "react-router-dom";
+import { Notify } from "../utils/toast.jsx";
 export default function SignUp() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -10,10 +11,28 @@ export default function SignUp() {
   const [error, setError] = useState(null);
   useEffect(() => {
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setUserLat(position.coords.latitude);
-        setUserLng(position.coords.longitude);
-      });
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLat(position.coords.latitude);
+          setUserLng(position.coords.longitude);
+        },
+        (error) => {
+          setError(error.message);
+          fetch(
+            `https://api.ipgeolocation.io/ipgeo?apiKey=${
+              import.meta.env.VITE_IP_API_KEY
+            }`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              setUserLat(Number(data.latitude));
+              setUserLng(Number(data.longitude));
+            })
+            .catch((error) => {
+              setError(error.message);
+            });
+        }
+      );
     } else {
       setError("Geolocation is not supported by your browser");
     }
@@ -24,10 +43,10 @@ export default function SignUp() {
       if (response.ok) {
         navigate("/auth/login", { state: { username: newUser.username } });
       } else {
-        alert("Username already exists");
+        Notify("Username already exists");
       }
     } catch (err) {
-      alert("Sign up failed");
+      Notify("Signup failed");
     }
   }
   function handleSubmit(event) {
@@ -36,12 +55,11 @@ export default function SignUp() {
     handleCreateUser(user);
     setUsername("");
     setPassword("");
-    if (error) alert(error);
   }
   return (
     <>
       <h1>Sound Map 🎵</h1>
-      <form id="sign-up-form" onSubmit={handleSubmit}>
+      <form id="sign-up-form" onSubmit={(event) => handleSubmit(event)}>
         <label>
           <input
             type="text"

@@ -23,9 +23,6 @@ export async function getUserRegion(userId) {
 }
 
 export async function getAllUsers(adminRegion, userRole) {
-  if (userRole === Role.user) {
-    throw new Error("Forbidden: not an admin");
-  }
   try {
     if (userRole === Role.admin) {
       return await prisma.user.findMany({
@@ -45,9 +42,6 @@ export async function getAllUsers(adminRegion, userRole) {
 }
 
 export async function getAllSongs(adminRegion, userRole) {
-  if (userRole === Role.user) {
-    throw new Error("Forbidden: not an admin");
-  }
   try {
     if (userRole === Role.admin) {
       return await prisma.savedSong.findMany();
@@ -63,9 +57,6 @@ export async function getAllSongs(adminRegion, userRole) {
 }
 
 export async function getTopSongs(adminRegion, userRole) {
-  if (userRole === Role.user) {
-    throw new Error("Forbidden: not an admin");
-  }
   try {
     if (userRole === Role.admin) {
       const songLimit = 25;
@@ -102,7 +93,7 @@ export async function getTopSongs(adminRegion, userRole) {
       JOIN
         "Song" s ON ss."songId" = s.id
       WHERE
-        ss.region = CAST(${adminRegion} AS VARCHAR)
+        ss.region = ${adminRegion}
       GROUP BY
         s.id, s.title, s.artist, s."coverUrl"
       ORDER BY
@@ -117,9 +108,6 @@ export async function getTopSongs(adminRegion, userRole) {
 }
 
 export async function getTopUsers(adminRegion, userRole) {
-  if (userRole === Role.user) {
-    throw new Error("Forbidden: not an admin");
-  }
   try {
     if (userRole === Role.admin) {
       const userLimit = 25;
@@ -154,7 +142,7 @@ export async function getTopUsers(adminRegion, userRole) {
       JOIN
         "User" u ON ss."userId" = u.id
       WHERE
-        u.region = CAST(${adminRegion} AS VARCHAR) AND u.role = 'user'
+        u.region = ${adminRegion} AND u.role = 'user'
       GROUP BY
         u.id, u.username, u.region
       ORDER BY
