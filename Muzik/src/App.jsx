@@ -8,6 +8,7 @@ import ProtectedRoute from "./auth/Protect";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminContent from "./containers/AdminContent";
+import AdminProtectedRoute from "./auth/AdminProtect";
 function App() {
   return (
     <AuthProvider>
@@ -17,7 +18,9 @@ function App() {
           <Route path="/auth/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />}></Route>
-            <Route path="/admin/dashboard" element={<AdminContent />}></Route>
+            <Route element={<AdminProtectedRoute />}>
+              <Route path="/admin/dashboard" element={<AdminContent />}></Route>
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
