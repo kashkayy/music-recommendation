@@ -332,3 +332,22 @@ label {
   gap: 20rem;
   margin-top: 0.6rem;
 }
+.link-container{
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: white;
+  border-color: black;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.link-container:hover{
+  background-color: #888;
+}
+.link{
+  text-decoration: none;
+  color: black;
+}

@@ -17,7 +17,7 @@ export default function Dashboard() {
     BarElement,
     Legend,
     Tooltip,
-    Title,
+    Title
   );
   const [topSongsData, setTopSongsData] = useState([]);
   const [topUsersData, setTopUsersData] = useState([]);
