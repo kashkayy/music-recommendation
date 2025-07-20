@@ -1,7 +1,5 @@
 import prisma from "../PrismaClient.js";
-import {
-  getBucketSizeFromZoom,
-} from "../utils/ZoomHelper.js";
+import { getBucketSizeFromZoom } from "../utils/ZoomHelper.js";
 export async function getClustersData({
   latMin,
   latMax,
@@ -9,8 +7,8 @@ export async function getClustersData({
   lngMax,
   zoom,
 }) {
-  const centerLat = ((latMin + latMax)/2)
-  const {bucketLat, bucketLng} = getBucketSizeFromZoom(zoom, centerLat);
+  const centerLat = (latMin + latMax) / 2;
+  const { bucketLat, bucketLng } = getBucketSizeFromZoom(zoom, centerLat);
   if (!bucketLat || !bucketLng) throw new Error("Something went wrong.");
   try {
     const clusters = await prisma.$queryRaw`
@@ -26,29 +24,28 @@ export async function getClustersData({
         ss.lat BETWEEN CAST (${latMin} AS DOUBLE PRECISION) AND CAST(${latMax} AS DOUBLE PRECISION)
         AND ss.lng BETWEEN CAST (${lngMin} AS DOUBLE PRECISION) AND CAST(${lngMax} AS DOUBLE PRECISION)
       GROUP BY lat_idx, lng_idx
-    `
+    `;
     const results = clusters.map((cluster) => ({
       id: `${cluster.lat_idx}_${cluster.lng_idx}`,
       lat: Number(cluster.avg_lat),
       lng: Number(cluster.avg_lng),
       count: Number(cluster.count),
       latBucket: Number(cluster.lat_idx),
-      lngBucket: Number(cluster.lng_idx)
-    }))
-    return results
+      lngBucket: Number(cluster.lng_idx),
+    }));
+    return results;
   } catch (err) {
     throw new Error("Error getting clusters data");
   }
 }
-export async function getTopSongs({lat, lng, zoom}) {
-  const { bucketLat, bucketLng } = getBucketSizeFromZoom(zoom)
-  if (!bucketLat || !bucketLng)
-    throw new Error("Invalid bucket sizes");
-  const latMin = lat - bucketLat/2;
-  const latMax = lat + bucketLat/2;
-  const lngMin = lng - bucketLng/2;
-  const lngMax = lng + bucketLng/2;
-  const songLimit = 5
+export async function getTopSongs({ lat, lng, zoom }) {
+  const { bucketLat, bucketLng } = getBucketSizeFromZoom(zoom);
+  if (!bucketLat || !bucketLng) throw new Error("Invalid bucket sizes");
+  const latMin = lat - bucketLat / 2;
+  const latMax = lat + bucketLat / 2;
+  const lngMin = lng - bucketLng / 2;
+  const lngMax = lng + bucketLng / 2;
+  const songLimit = 5;
   try {
     const topSongs = await prisma.$queryRaw`
       SELECT
@@ -69,8 +66,8 @@ export async function getTopSongs({lat, lng, zoom}) {
       ORDER BY
         save_count DESC
       LIMIT CAST(${songLimit} AS INT)
-      `
-    return topSongs
+      `;
+    return topSongs;
   } catch (err) {
     throw new Error("Error getting top songs");
   }
