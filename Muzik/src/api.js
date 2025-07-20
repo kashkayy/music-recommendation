@@ -5,7 +5,7 @@ export async function register(newUser) {
   const res = await fetch(`${BASE_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password, userLat, userLng}),
+    body: JSON.stringify({ username, password, userLat, userLng }),
   });
   const data = await res.json();
   return data;
@@ -25,7 +25,7 @@ export function getToken() {
 }
 export async function getTrendingSongs(lat, lng) {
   const res = await fetch(
-    `${BASE_URL}/auth/login/trending?lat=${lat}&lng=${lng}`,
+    `${BASE_URL}/auth/login/trending?lat=${lat}&lng=${lng}`
   );
   const data = await res.json();
   return data;
@@ -60,7 +60,7 @@ export async function deleteSavedSong(songId, lat, lng) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
   const data = await res.json();
   return data;
@@ -89,42 +89,38 @@ export async function isAdmin() {
   return data.isAdmin;
 }
 export async function getAllUsers() {
-  const token = getToken();
-  const res = await fetch(`${BASE_URL}/auth/admin/users`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const authCheck = getAuthHeaders();
+  const res = await fetch(`${BASE_URL}/auth/admin/users`, authCheck);
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
   const data = await res.json();
   return data.results;
 }
 export async function getAllSongs() {
-  const token = getToken();
-  const res = await fetch(`${BASE_URL}/auth/admin/songs`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const authCheck = getAuthHeaders();
+  const res = await fetch(`${BASE_URL}/auth/admin/songs`, authCheck);
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
   const data = await res.json();
   return data.results;
 }
 export async function getTopSongs() {
-  const token = getToken();
-  const res = await fetch(`${BASE_URL}/auth/admin/top/songs`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const authCheck = getAuthHeaders();
+  const res = await fetch(`${BASE_URL}/auth/admin/top/saved-songs`, authCheck);
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
   const data = await res.json();
   return data.results;
 }
 export async function getTopUsers() {
-  const token = getToken();
-  const res = await fetch(`${BASE_URL}/auth/admin/top/users`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const authCheck = getAuthHeaders();
+  const res = await fetch(`${BASE_URL}/auth/admin/top/active-users`, authCheck);
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
   const data = await res.json();
   return data.results;
 }
@@ -151,20 +147,26 @@ export async function toggleBan(userId) {
   return data.results;
 }
 export async function getClusters(latMin, latMax, lngMin, lngMax, zoom) {
-  const authCheck = getAuthHeaders()
-  const res = await fetch(`${BASE_URL}/auth/clusters/info?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}&zoom=${zoom}`, authCheck)
+  const authCheck = getAuthHeaders();
+  const res = await fetch(
+    `${BASE_URL}/auth/clusters/info?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}&zoom=${zoom}`,
+    authCheck
+  );
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
-  const data = await res.json()
-  return data
+  const data = await res.json();
+  return data;
 }
 export async function getClusterSongs(lat, lng, zoom) {
-  const authCheck = getAuthHeaders()
-  const res = await fetch(`${BASE_URL}/auth/clusters/songs?lat=${lat}&lng=${lng}&zoom=${zoom}`, authCheck)
+  const authCheck = getAuthHeaders();
+  const res = await fetch(
+    `${BASE_URL}/auth/clusters/songs?lat=${lat}&lng=${lng}&zoom=${zoom}`,
+    authCheck
+  );
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);
   }
-  const data = await res.json()
-  return data
+  const data = await res.json();
+  return data;
 }

@@ -11,12 +11,9 @@ export function getBucketSizeFromZoom(zoom, centerLat = 0) {
   const bucketLng = bucketLat / Math.cos((safePoint * Math.PI) / 180);
   return { bucketLat, bucketLng };
 }
-export function checkCoordsValue(coord, bucket) {
-  if (coord < 0) {
-    return Math.ceil(coord / bucket);
-  } else if (coord > 0) {
-    return Math.floor(coord / bucket);
-  }
+export function checkCoordsValue(coord, bucketSize) {
+  const result = coord / bucketSize;
+  return Number(result.toFixed(3));
 }
 // regionZoom represents zoom level at which each bucket is its own region.
 export const regionZoom = 6;
