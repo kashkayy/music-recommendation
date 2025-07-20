@@ -2,21 +2,13 @@ import { useState } from "react";
 import { SECTIONS } from "../AdminSections";
 import Sidebar from "../components/Sidebar";
 import Dashboard from "../pages/Dashboard";
-import DataTable from "../pages/DataTable";
+import UserTable from "../pages/UserTable";
+import SongTable from "../pages/SongTable";
 import { fetchData } from "../AdminData";
 import { tableColumns } from "../TableColumns";
-import { toggleAdmin, toggleBan } from "../api";
 export default function AdminContent() {
   const [activeSection, setActiveSection] = useState(SECTIONS.DASHBOARD);
   const [sectionData, setSectionData] = useState([]);
-  async function handleToggleBan(userId) {
-    const updated = await toggleBan(userId);
-    setSectionData(updated);
-  }
-  async function handleToggleAdmin(userId) {
-    const updated = await toggleAdmin(userId);
-    setSectionData(updated);
-  }
   async function handleSectionChange(section) {
     setActiveSection(section);
     const data = await fetchData(section);
@@ -25,17 +17,13 @@ export default function AdminContent() {
   function renderContent() {
     if (activeSection === SECTIONS.DASHBOARD) {
       return <Dashboard />;
-    } else if (
-      activeSection === SECTIONS.USERS ||
-      activeSection === SECTIONS.SONGS
-    ) {
+    } else if (activeSection === SECTIONS.USERS) {
       return (
-        <DataTable
-          data={sectionData}
-          columns={tableColumns[activeSection]}
-          toggleAdmin={handleToggleAdmin}
-          toggleBan={handleToggleBan}
-        />
+        <UserTable data={sectionData} columns={tableColumns[activeSection]} />
+      );
+    } else if (activeSection === SECTIONS.SONGS) {
+      return (
+        <SongTable data={sectionData} columns={tableColumns[activeSection]} />
       );
     }
   }
