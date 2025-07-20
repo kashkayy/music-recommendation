@@ -17,6 +17,10 @@ export const PERMISSIONS = {
   demote: {
     [ROLE.globalAdmin]: [ROLE.regionAdmin],
   },
+  ban: {
+    [ROLE.globalAdmin]: [ROLE.user],
+    [ROLE.regionAdmin]: [ROLE.user],
+  },
 };
 export const ACTIONS = {
   promote: "Promote ⬆️",
