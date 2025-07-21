@@ -1,5 +1,5 @@
 import AdminButtons from "./AdminActions";
-export default function UserRow({ user, requester, columns }) {
+export default function UserRow({ user, requester, columns, onActionClick }) {
   return (
     <>
       <tr>
@@ -7,7 +7,11 @@ export default function UserRow({ user, requester, columns }) {
           if (column.key === "actions") {
             return (
               <td>
-                <AdminButtons requester={requester} target={user} />
+                <AdminButtons
+                  requester={requester}
+                  target={user}
+                  onAction={onActionClick}
+                />
               </td>
             );
           }

@@ -422,6 +422,35 @@ label {
   cursor: pointer;
 }
 
-.dropdown-items:hover{
+.dropdown-items:hover {
   background-color: #888;
+}
+
+.modal-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.admin-modal-content-container{
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 20rem;
+  height: 10rem;
+  position: relative;
+}
+
+.confirmation-buttons{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
 }

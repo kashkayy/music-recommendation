@@ -1,7 +1,7 @@
 import { ACTIONS } from "../AdminSections";
 import * as DropDownMenu from "@radix-ui/react-dropdown-menu";
 import { getAvailableActions } from "../utils/getAvailableActions";
-export default function AdminButtons({ requester, target }) {
+export default function AdminButtons({ requester, target, onAction }) {
   const availableActions = getAvailableActions(requester, target);
   return (
     <>
@@ -11,7 +11,12 @@ export default function AdminButtons({ requester, target }) {
         </DropDownMenu.Trigger>
         <DropDownMenu.Content className="dropdown-content" sideOffset={5}>
           {availableActions.map((action) => (
-            <DropDownMenu.Item key={action} className="dropdown-items">
+            <DropDownMenu.Item
+              key={action}
+              className="dropdown-items"
+              //This is where the handleActionClick callback function is called/performed
+              onClick={() => onAction(ACTIONS[action], target)}
+            >
               {ACTIONS[action]}
             </DropDownMenu.Item>
           ))}
