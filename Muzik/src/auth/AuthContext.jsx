@@ -8,6 +8,7 @@ export function AuthProvider({ children }) {
   const [adminStatus, setAdminStatus] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [region, setRegion] = useState(null);
+  const [user, setUser] = useState({});
   function login(newToken) {
     localStorage.setItem("token", newToken);
     setToken(newToken);
@@ -48,6 +49,18 @@ export function AuthProvider({ children }) {
       }
     }
     getUserRegion();
+    async function getUser() {
+      if (!token) {
+        setUser(null);
+      }
+      try {
+        const requester = jwtDecode(token);
+        setUser(requester);
+      } catch (error) {
+        setUser(null);
+      }
+    }
+    getUser();
   }, [isAuthenticated]);
   if (!isLoaded) {
     return (
@@ -65,7 +78,15 @@ export function AuthProvider({ children }) {
   }
   return (
     <AuthContext.Provider
-      value={{ login, logout, isAuthenticated, token, adminStatus, region }}
+      value={{
+        login,
+        logout,
+        isAuthenticated,
+        token,
+        adminStatus,
+        region,
+        user,
+      }}
     >
       {children}
     </AuthContext.Provider>

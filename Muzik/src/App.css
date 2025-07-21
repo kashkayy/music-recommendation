@@ -1,6 +1,7 @@
 #root {
   text-align: center;
 }
+
 body {
   display: flex;
   flex-direction: column;
@@ -11,6 +12,7 @@ body {
   height: 100%;
   box-sizing: border-box;
 }
+
 header {
   display: flex;
   align-items: center;
@@ -18,25 +20,30 @@ header {
   border-bottom: solid black;
   width: 100%;
 }
+
 p {
   font-size: 1.2rem;
   margin-bottom: 1rem;
   margin: 0;
 }
+
 h1 {
   font-size: 2.4em;
 }
+
 .nav-btns {
   display: flex;
   gap: 3rem;
   font-size: 1.5rem;
 }
+
 .search-container {
   display: flex;
   justify-content: center;
   margin-top: 6rem;
   gap: 5rem;
 }
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -49,17 +56,21 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   background-color: #888;
 }
+
 #sign-up-link:hover {
   color: red;
   cursor: pointer;
 }
+
 form {
   max-width: 19rem;
   padding: 7rem;
 }
+
 input[type="text"] {
   height: 5rem;
   width: 40rem;
@@ -68,10 +79,12 @@ input[type="text"] {
   border-radius: 5%;
   font-size: 1.5rem;
 }
+
 label {
   display: block;
   margin-bottom: 2rem;
 }
+
 .modal {
   position: fixed;
   top: 0;
@@ -83,6 +96,7 @@ label {
   justify-content: center;
   align-items: center;
 }
+
 .modal-content-container {
   background-color: #f8f8f8;
   padding: 20px;
@@ -92,6 +106,7 @@ label {
   height: 40rem;
   position: relative;
 }
+
 .close-btn {
   position: absolute;
   top: 10px;
@@ -108,41 +123,49 @@ label {
   justify-content: space-between;
   flex-direction: column;
 }
+
 .songs-header {
   margin-top: 2rem;
   margin-bottom: 0.5rem;
   font-size: 2.2rem;
 }
+
 .results {
   margin-top: 0;
   margin-bottom: 2.6rem;
 }
+
 .song-info {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
 }
+
 .song-img {
   width: 10rem;
   height: 10rem;
   object-fit: cover;
   border-radius: 5px;
 }
+
 .song-details {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
+
 .song-name {
   display: flex;
   font-weight: bold;
   font-size: 1.5rem;
 }
+
 .artist-name {
   font-size: 1.5rem;
 }
+
 .favorite-songs {
   display: flex;
   flex-wrap: wrap;
@@ -152,6 +175,7 @@ label {
   overflow: scroll;
   border-top: #888 solid 5px;
 }
+
 .song-card {
   position: relative;
   margin: 20px;
@@ -166,23 +190,27 @@ label {
   cursor: pointer;
   transition: box-shadow 0.5s ease;
 }
+
 .song-card:hover {
   box-shadow:
     0 10px 20px rgba(0, 0, 0, 0.4),
     0 20px 30px rgba(0, 0, 0, 0.2);
   border: none;
 }
+
 .card-image {
   border-radius: 1.35rem;
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
 }
+
 .card-img-wrapper {
   position: relative;
   width: 100%;
   height: auto;
 }
+
 .play-pause-button {
   display: flex;
   position: absolute;
@@ -198,27 +226,33 @@ label {
   align-items: center;
   border-radius: 25%;
 }
+
 .play-pause-button:hover {
   background-color: #888;
 }
+
 .card-info {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .card-song {
   font-size: 2rem;
   font-weight: bold;
   margin-top: none;
 }
+
 .card-artist {
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }
+
 .favorite-action {
   font-size: 3rem;
   cursor: pointer;
 }
+
 .delete-action {
   position: absolute;
   top: 0.5rem;
@@ -226,6 +260,7 @@ label {
   font-size: 2rem;
   cursor: pointer;
 }
+
 #permission {
   display: flex;
   margin-top: 28rem;
@@ -236,19 +271,23 @@ label {
   animation-name: slidein;
   animation-iteration-count: 1;
 }
+
 @keyframes slidein {
   from {
     margin-left: 100%;
     width: 300%;
   }
+
   to {
     margin-left: 0%;
     width: 100%;
   }
 }
+
 .delete-action {
   color: red;
 }
+
 .loading-container {
   display: flex;
   background-color: transparent;
@@ -257,6 +296,7 @@ label {
   margin-left: 10rem;
   margin-top: 33rem;
 }
+
 .search-modal {
   display: flex;
   flex-direction: column;
@@ -267,6 +307,7 @@ label {
   height: 100%;
   z-index: 100;
 }
+
 .search-modal-content-container {
   background-color: #f8f8f8;
   padding: 20px;
@@ -280,6 +321,7 @@ label {
   align-items: center;
   justify-content: flex-start;
 }
+
 .sidebar.open {
   width: 200px;
   transition: width 700ms;
@@ -287,52 +329,62 @@ label {
   overflow: hidden;
   color: #fff;
 }
+
 .sidebar {
   width: 60px;
 }
+
 .aside {
   display: flex;
   height: 100vh;
   border: none;
 }
+
 .admin {
   display: flex;
   height: 100vh;
 }
+
 .data-page {
   display: flex;
   flex-direction: column;
   margin-left: 2rem;
   height: fit-content;
 }
+
 .page-control {
   display: flex;
   gap: 2rem;
   justify-content: center;
 }
+
 .next {
   display: flex;
   font-size: 3rem;
   cursor: pointer;
 }
+
 .prev {
   display: flex;
   font-size: 3rem;
   cursor: pointer;
 }
+
 .dashboard {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
-.map-switch{
+
+.map-switch {
   display: flex;
   justify-content: center;
   gap: 20rem;
   margin-top: 0.6rem;
 }
-.link-container{
+
+.link-container {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -344,10 +396,32 @@ label {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-.link-container:hover{
+
+.link-container:hover {
   background-color: #888;
 }
-.link{
+
+.link {
   text-decoration: none;
   color: black;
+}
+
+
+.dropdown-content {
+  background: white;
+  border: #222 solid 1px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  min-width: 30px;
+  padding: 10px;
+}
+
+.dropdown-items {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.dropdown-items:hover{
+  background-color: #888;
 }

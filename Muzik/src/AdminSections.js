@@ -4,14 +4,14 @@ export const SECTIONS = {
   SONGS: "Songs",
 };
 export const ROLE = {
-  globalAdmin: "global-admin",
-  regionAdmin: "region-admin",
+  globalAdmin: "admin",
+  regionAdmin: "regionAdmin",
   user: "user",
 };
 
 export const PERMISSIONS = {
   promote: {
-    [ROLE.globalAdmin]: [ROLE.user, ROLE.regionAdmin],
+    [ROLE.globalAdmin]: [ROLE.user],
     [ROLE.regionAdmin]: [ROLE.user],
   },
   demote: {
@@ -27,7 +27,7 @@ export const ACTIONS = {
   demote: "Demote ⬇️",
   ban: "Ban ❗️",
 };
-export function canPerformAction({ action, requester, target }) {
+export function canPerformAction(action, requester, target) {
   const allowedTargets = PERMISSIONS[action]?.[requester.role];
   if (!allowedTargets) return false;
   const sameRegion = requester.region === target.region;

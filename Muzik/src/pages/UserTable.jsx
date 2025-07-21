@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import { ROLE } from "../AdminSections.js";
-export default function DataTable({ columns, data, toggleAdmin, toggleBan }) {
+import UserRow from "../components/UserRows.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
+export default function UserTable({ columns, data }) {
+  const { user } = useAuth();
+  const requester = user;
   const [currPage, setCurrPage] = useState(1);
   const rows = 20;
   let startIndex = (currPage - 1) * rows;
@@ -26,24 +29,12 @@ export default function DataTable({ columns, data, toggleAdmin, toggleBan }) {
           </thead>
           <tbody>
             {data.slice(startIndex, endIndex).map((row) => (
-              <tr key={row.id}>
-                {columns.map((column) =>
-                  column.key === "actions" ? (
-                    <td key="actions">
-                      <button onClick={() => toggleAdmin(row.id)}>
-                        {row.role === ROLE.admin
-                          ? "Revoke Admin"
-                          : "Make Admin"}
-                      </button>
-                      <button onClick={() => toggleBan(row.id)}>
-                        {row.isBanned ? "Unban" : "Ban"}
-                      </button>
-                    </td>
-                  ) : (
-                    <td key={column.key}>{row[column.key]}</td>
-                  ),
-                )}
-              </tr>
+              <UserRow
+                key={row.id}
+                user={row}
+                columns={columns}
+                requester={requester}
+              />
             ))}
           </tbody>
         </table>
