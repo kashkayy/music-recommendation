@@ -2,8 +2,11 @@ import { useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import UserRow from "../components/UserRows.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
+import PendingModal from "../components/PendingActionModal.jsx";
+import useAdmin from "../hooks/useAdmin.jsx";
 export default function UserTable({ columns, data }) {
   const { user } = useAuth();
+  const { handleActionClick, pendingAction, handleClose } = useAdmin();
   const requester = user;
   const [currPage, setCurrPage] = useState(1);
   const rows = 20;
@@ -34,6 +37,8 @@ export default function UserTable({ columns, data }) {
                 user={row}
                 columns={columns}
                 requester={requester}
+                //passes the callback function down as a prop
+                onActionClick={handleActionClick}
               />
             ))}
           </tbody>
@@ -52,6 +57,13 @@ export default function UserTable({ columns, data }) {
             ></FaAngleRight>
           )}
         </div>
+        {pendingAction?.user && (
+          <PendingModal
+            action={pendingAction.action}
+            target={pendingAction.user}
+            onClose={handleClose}
+          />
+        )}
         <span>{`Page ${currPage} of ${totalPages}`}</span>
       </div>
     </>
