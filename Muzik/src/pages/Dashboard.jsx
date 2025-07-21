@@ -13,6 +13,7 @@ import { getTopSongs, getTopUsers } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import { reverseGeocoder } from "../utils/reverseGeocode";
 import { Notify } from "../utils/toast";
+import { ROLE } from "../AdminSections";
 export default function Dashboard() {
   ChartJS.register(
     CategoryScale,
@@ -25,7 +26,7 @@ export default function Dashboard() {
   const [topSongsData, setTopSongsData] = useState([]);
   const [topUsersData, setTopUsersData] = useState([]);
   const [regionName, setRegionName] = useState(null);
-  const { region } = useAuth();
+  const { region, user } = useAuth();
   useEffect(() => {
     async function getChartdata() {
       try {
@@ -103,7 +104,11 @@ export default function Dashboard() {
   return (
     <>
       <div className="dashboard">
-        <h1>Dashboard for {regionName}</h1>
+        {user.role === ROLE.globalAdmin ? (
+          <h1>Dashboard for Entire Map</h1>
+        ) : (
+          <h1>Dashboard for {regionName}</h1>
+        )}
         <div className="bar-chart">
           <Bar
             style={{ padding: "1.5rem", width: "50rem", height: "80rem" }}
