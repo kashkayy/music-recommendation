@@ -19,7 +19,12 @@ export default function AdminContent() {
       return <Dashboard />;
     } else if (activeSection === SECTIONS.USERS) {
       return (
-        <UserTable data={sectionData} columns={tableColumns[activeSection]} />
+        <UserTable
+          data={sectionData}
+          columns={tableColumns[activeSection]}
+          //pass down handleSectionChange function as a prop
+          onChange={handleSectionChange}
+        />
       );
     } else if (activeSection === SECTIONS.SONGS) {
       return (

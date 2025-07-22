@@ -18,7 +18,7 @@ export const PERMISSIONS = {
     [ROLE.globalAdmin]: [ROLE.regionAdmin],
   },
   ban: {
-    [ROLE.globalAdmin]: [ROLE.user],
+    [ROLE.globalAdmin]: [ROLE.user, ROLE.regionAdmin],
     [ROLE.regionAdmin]: [ROLE.user],
   },
 };
@@ -26,6 +26,7 @@ export const ACTIONS = {
   promote: "Promote ⬆️",
   demote: "Demote ⬇️",
   ban: "Ban ❗️",
+  unban: "Unban ✅",
 };
 export function canPerformAction(action, requester, target) {
   const allowedTargets = PERMISSIONS[action]?.[requester.role];

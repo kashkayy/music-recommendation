@@ -4,9 +4,10 @@ import UserRow from "../components/UserRows.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
 import PendingModal from "../components/PendingActionModal.jsx";
 import useAdmin from "../hooks/useAdmin.jsx";
-export default function UserTable({ columns, data }) {
+export default function UserTable({ columns, data, onChange }) {
   const { user } = useAuth();
-  const { handleActionClick, pendingAction, handleClose } = useAdmin();
+  const { handleActionClick, pendingAction, handleClose, handleConfirm } =
+    useAdmin(onChange);
   const requester = user;
   const [currPage, setCurrPage] = useState(1);
   const rows = 20;
@@ -62,6 +63,7 @@ export default function UserTable({ columns, data }) {
             action={pendingAction.action}
             target={pendingAction.user}
             onClose={handleClose}
+            onConfirm={handleConfirm}
           />
         )}
         <span>{`Page ${currPage} of ${totalPages}`}</span>

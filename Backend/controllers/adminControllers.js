@@ -173,12 +173,12 @@ export async function updateBanStatus(userId, newStatus, userRole) {
     if (userRole === Role.regionAdmin) {
       return await prisma.user.update({
         where: { id: Number(userId), role: Role.user },
-        data: { isBanned: JSON.parse(newStatus.toLowerCase()) },
+        data: { isBanned: newStatus },
       });
     } else if (userRole === Role.admin) {
       return await prisma.user.update({
         where: { id: Number(userId) },
-        data: { isBanned: JSON.parse(newStatus.toLowerCase()) },
+        data: { isBanned: newStatus },
       });
     }
   } catch (error) {

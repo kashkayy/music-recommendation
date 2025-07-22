@@ -1,4 +1,5 @@
 import { getAuthHeaders } from "./utils/getHeaders";
+import { Notify } from "./utils/toast";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 export async function register(newUser) {
   const { username, password, userLat, userLng } = newUser;
@@ -124,25 +125,40 @@ export async function getTopUsers() {
   const data = await res.json();
   return data.results;
 }
-export async function toggleAdmin(userId) {
-  const token = getToken();
-  const res = await fetch(`${BASE_URL}/auth/admin/${userId}/role-action`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function togglePromote(userId, newRole) {
+  const authCheck = getAuthHeaders("PUT", { newRole });
+  const res = await fetch(
+    `${BASE_URL}/auth/admin/role-promote/${userId}`,
+    authCheck
+  );
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  Notify("Succesful Action!");
   const data = await res.json();
   return data.results;
 }
-export async function toggleBan(userId) {
-  const token = getToken();
-  const res = await fetch(`${BASE_URL}/auth/admin/${userId}/ban-action`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function toggleDemote(userId) {
+  const authCheck = getAuthHeaders("PUT");
+  const res = await fetch(
+    `${BASE_URL}/auth/admin/role-demote/${userId}`,
+    authCheck
+  );
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  Notify("Successful Action!");
+
+  const data = await res.json();
+  return data.results;
+}
+export async function toggleBan(userId, newStatus) {
+  const authCheck = getAuthHeaders("PUT", { newStatus });
+  const res = await fetch(`${BASE_URL}/auth/admin/ban/${userId}`, authCheck);
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  Notify("Successful Action!");
   const data = await res.json();
   return data.results;
 }
