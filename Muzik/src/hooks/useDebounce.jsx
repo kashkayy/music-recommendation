@@ -5,7 +5,9 @@ export default function useDebounce(callback, delay) {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    timeoutRef.current = setTimeout(() => callback(...args), delay);
+    timeoutRef.current = setTimeout(() => {
+      callback(...args);
+    }, delay);
   }
   useEffect(() => {
     return () => {

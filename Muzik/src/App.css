@@ -139,7 +139,10 @@ label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 5rem;
+  transition: box-shadow 1s ease;
+  border: solid #888 0.3rem;
+  border-radius: 1.4rem;
 }
 
 .song-img {
@@ -147,6 +150,45 @@ label {
   height: 10rem;
   object-fit: cover;
   border-radius: 5px;
+}
+
+.song-img-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.song-img-container:hover .preview-indicator {
+  opacity: 0.8 !important;
+}
+
+.preview-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.preview-indicator.active {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.song-info:hover {
+  cursor: pointer;
+  border: none;
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.4),
+    0 20px 30px rgba(0, 0, 0, 0.2);
 }
 
 .song-details {
@@ -261,28 +303,6 @@ label {
   cursor: pointer;
 }
 
-#permission {
-  display: flex;
-  margin-top: 28rem;
-  justify-content: center;
-  color: red;
-  font-size: 5rem;
-  animation-duration: 1s;
-  animation-name: slidein;
-  animation-iteration-count: 1;
-}
-
-@keyframes slidein {
-  from {
-    margin-left: 100%;
-    width: 300%;
-  }
-
-  to {
-    margin-left: 0%;
-    width: 100%;
-  }
-}
 
 .delete-action {
   color: red;
@@ -549,4 +569,14 @@ label {
   font-size: 1rem;
   color: #555;
   margin: 0;
+}
+
+.cluster-play {
+  color: white;
+  font-size: 1.6rem;
+}
+
+.cluster-pause {
+  color: white;
+  font-size: 1.6rem;
 }
