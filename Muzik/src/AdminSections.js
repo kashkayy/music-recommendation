@@ -12,7 +12,6 @@ export const ROLE = {
 export const PERMISSIONS = {
   promote: {
     [ROLE.globalAdmin]: [ROLE.user],
-    [ROLE.regionAdmin]: [ROLE.user],
   },
   demote: {
     [ROLE.globalAdmin]: [ROLE.regionAdmin],
