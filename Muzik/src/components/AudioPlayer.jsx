@@ -5,6 +5,8 @@ export default function AudioPlayer({
   selectedTitle,
   onEnd,
   isPlaying,
+  isHovering,
+  isPreview = false,
 }) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [error, setError] = useState(null);
@@ -17,7 +19,7 @@ export default function AudioPlayer({
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://itunes.apple.com/search?term=${encodeURIComponent(query)}`,
+        `https://itunes.apple.com/search?term=${encodeURIComponent(query)}`
       );
       const data = await response.json();
       const song = data.results;
@@ -41,12 +43,22 @@ export default function AudioPlayer({
     if (!isSelected || !previewUrl) return;
     const audio = audioRef.current;
     if (!audio) return;
-    if (isPlaying) {
-      audio.play();
+    // For preview mode with hover
+    if (isPreview) {
+      if (isPlaying && isHovering) {
+        audio.play();
+      } else {
+        audio.currentTime = 0;
+      }
     } else {
-      audio.pause();
+      // For normal mode
+      if (isPlaying) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
     }
-  }, [previewUrl, isPlaying, isSelected]);
+  }, [previewUrl, isPlaying, isSelected, isHovering, isPreview]);
   if (!isSelected) return null;
   return (
     <div className="inline-audio-player">

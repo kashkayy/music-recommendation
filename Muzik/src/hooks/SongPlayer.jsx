@@ -5,6 +5,7 @@ export default function useSongPlayer() {
   const [isClicked, setIsClicked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currSong, setCurrSong] = useState(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   const handleCardClick = useCallback((song) => {
     setArtist(song.artist);
@@ -25,6 +26,22 @@ export default function useSongPlayer() {
       setIsClicked(true);
     }
   });
+  const handleMouseEnter = useCallback(
+    (song) => {
+      setCurrSong(song);
+      setIsPlaying(true);
+      setArtist(song.artist);
+      setTitle(song.title);
+      setIsClicked(true);
+      setIsHovering(true);
+    },
+  );
+  const handleMouseLeave = useCallback(() => {
+    setIsPlaying(false);
+    setIsClicked(false);
+    setCurrSong(null);
+    setIsHovering(false);
+  });
   const handleEnd = useCallback(() => {
     setCurrSong(null);
     setIsClicked(false);
@@ -44,5 +61,8 @@ export default function useSongPlayer() {
     handlePlayPauseClick,
     handleEnd,
     checkSongPlaying,
+    handleMouseEnter,
+    handleMouseLeave,
+    isHovering,
   };
 }
