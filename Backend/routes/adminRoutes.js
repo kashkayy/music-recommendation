@@ -83,15 +83,13 @@ router.put(
   async (req, res) => {
     const { userId } = req.params;
     const reqRole = req.user.role;
-    const reqRegion = req.user.region;
     const { newRole } = req.body;
     const userRole = await getUserRole(userId);
-    const userRegion = await getUserRegion(userId);
     try {
       if (userRole === newRole) {
         return res.status(403).json(badReq(`User is already ${newRole}`));
       }
-      if (!canPromote(reqRole, userRole, reqRegion, userRegion, newRole)) {
+      if (!canPromote(reqRole, userRole, newRole)) {
         return res
           .status(403)
           .json(badReq("You are not allowed to promote this user"));
