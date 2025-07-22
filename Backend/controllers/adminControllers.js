@@ -225,7 +225,7 @@ export async function demoteUser(userId) {
 export async function getUserPlaylist(userId, reqRole) {
   try {
     if (reqRole === Role.admin || reqRole === Role.regionAdmin) {
-      const favorites = await prisma.savedSong.findFirst({
+      const favorites = await prisma.savedSong.findMany({
         where: { userId: Number(userId) },
         select: { song: true },
       });

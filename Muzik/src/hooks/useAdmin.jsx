@@ -5,6 +5,7 @@ import { Notify } from "../utils/toast";
 export default function useAdmin(onChange) {
   const [pendingAction, setPendingAction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [playlistOpen, setPlaylistOpen] = useState(false);
   //This function uses pendingAction state to store current action to be performed as well as target info into an object
   const handleActionClick = useCallback((action, target) => {
     setPendingAction({ action, user: target });
@@ -35,11 +36,22 @@ export default function useAdmin(onChange) {
       setPendingAction(null);
     }
   }, []);
+
+  const handlePlaylistView = useCallback(() => {
+    setPlaylistOpen(true);
+  });
+
+  const handlePlaylistClose = useCallback(() => {
+    setPlaylistOpen(false);
+  });
   return {
     handleActionClick,
     pendingAction,
     handleClose,
     handleConfirm,
     isLoading,
+    playlistOpen,
+    handlePlaylistView,
+    handlePlaylistClose,
   };
 }
