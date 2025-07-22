@@ -162,6 +162,18 @@ export async function toggleBan(userId, newStatus) {
   const data = await res.json();
   return data.results;
 }
+export async function getUserPlaylist(userId) {
+  const authCheck = getAuthHeaders();
+  const res = await fetch(
+    `${BASE_URL}/auth/admin/user-favorites/${userId}`,
+    authCheck
+  );
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  const data = await res.json();
+  return data.results;
+}
 export async function getClusters(latMin, latMax, lngMin, lngMax, zoom) {
   const authCheck = getAuthHeaders();
   const res = await fetch(

@@ -6,6 +6,7 @@ export const tableColumns = {
     { key: "username", header: "Username" },
     { key: "createdAt", header: "Sign up Date" },
     { key: "actions", header: "Actions" },
+    { key: "playlist", header: "Playlist" },
   ],
   [SECTIONS.SONGS]: [
     { key: "title", header: "Title" },
