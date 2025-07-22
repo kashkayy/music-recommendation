@@ -166,10 +166,19 @@ export async function findOrCreateSongRanking(songId, lat, lng) {
 }
 export async function searchResults(searchQuery) {
   try {
-    const searchResults = fetchSearchResults(searchQuery);
-    return searchResults;
+    const unFilteredResults = await fetchSearchResults(searchQuery);
+    const seen = new Set();
+    const filtered = [];
+    for (const song of unFilteredResults) {
+      const key = `${song.title.toLowerCase()}-${song.artist.toLowerCase()}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        filtered.push(song);
+      }
+    }
+    return filtered;
   } catch (err) {
-    console.log("Error fetching search results", err);
+    throw new Error("Error fetching search results");
   }
 }
 export async function deleteSavedSong(songId, userId, lat, lng) {
