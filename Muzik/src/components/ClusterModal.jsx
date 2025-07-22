@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { getClusterSongs } from "../api";
 import { IoAddCircleOutline } from "react-icons/io5";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaPlay, FaPause } from "react-icons/fa";
 import { Spinner } from "react-spinner-toolkit";
+import { Notify } from "../utils/toast";
+import useDebounce from "../hooks/useDebounce";
+import useSongPlayer from "../hooks/SongPlayer";
+import AudioPlayer from "./AudioPlayer";
 export default function ClusterModal({
   lat,
   lng,
@@ -16,6 +20,19 @@ export default function ClusterModal({
   const [songs, setSongs] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const {
+    isPlaying,
+    checkSongPlaying,
+    handleMouseEnter,
+    artist,
+    title,
+    handleEnd,
+    currSong,
+    isClicked,
+    handleMouseLeave,
+    isHovering
+  } = useSongPlayer();
+  const debouncedMouseEnter = useDebounce(handleMouseEnter, 500);
   useEffect(() => {
     getClusterSongs(lat, lng, zoom)
       .then((data) => {
@@ -35,7 +52,7 @@ export default function ClusterModal({
     );
   }
   function handleAlreadyFavorited() {
-    alert("Song already exists in favorites!");
+    Notify("Song already exists in favorites!");
   }
   function handleSave(song) {
     onSave(song, userLat, userLng);
@@ -59,11 +76,35 @@ export default function ClusterModal({
     }
     return songs.map((song, index) => (
       <div className="song-info" key={index}>
-        <img
-          src={song.coverurl}
-          alt="song preview Image"
-          className="song-img"
-        />
+        <div className="song-img-container" style={{ position: 'relative' }}>
+          <img
+            src={song.coverurl}
+            alt="song preview Image"
+            className="song-img"
+            onMouseEnter={() => debouncedMouseEnter(song)}
+            onMouseLeave={handleMouseLeave}
+          />
+          <div
+            className={`preview-indicator ${checkSongPlaying(song) ? 'active' : ''}`}
+          >
+            {checkSongPlaying(song) && isPlaying ? (
+              <FaPause className="cluster-pause" />
+            ) : (
+              <FaPlay className="cluster-play" />
+            )}
+          </div>
+        </div>
+        {isClicked && checkSongPlaying(song) && (
+          <AudioPlayer
+            song={currSong}
+            selectedArtist={artist}
+            selectedTitle={title}
+            isPlaying={isPlaying}
+            onEnd={handleEnd}
+            isHovering={isHovering}
+            isPreview={true}
+          />
+        )}
         <div className="song-details">
           <p className="song-name">{song.title}</p>
           <p className="artist-name">{song.artist}</p>
