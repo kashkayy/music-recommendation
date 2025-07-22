@@ -15,7 +15,7 @@ export default function AdminButtons({ requester, target, onAction }) {
               key={action}
               className="dropdown-items"
               //This is where the handleActionClick callback function is called/performed
-              onClick={() => onAction(ACTIONS[action], target)}
+              onClick={() => onAction(action, target)}
             >
               {ACTIONS[action]}
             </DropDownMenu.Item>
