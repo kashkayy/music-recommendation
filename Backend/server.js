@@ -6,6 +6,7 @@ import searchRoutes from "./routes/searchRoutes.js";
 import savedSongsRoutes from "./routes/savedSongRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import clusterRoutes from "./routes/clusterRoutes.js";
+import recommendationRoutes from "./routes/recommendationRoutes.js";
 const app = express();
 const PORT = 5200;
 app.use(express.json());
@@ -15,7 +16,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
   res.header("Access-Control-Allow-Credentials", "true");
   next();
@@ -26,4 +27,5 @@ authRoutes.use("/search", searchRoutes);
 authRoutes.use("/favorites", savedSongsRoutes);
 authRoutes.use("/admin", adminRoutes);
 authRoutes.use("/clusters", clusterRoutes);
+authRoutes.use("/recommendation", recommendationRoutes);
 app.listen(PORT, console.log(`Successful connection to ${PORT}`));
