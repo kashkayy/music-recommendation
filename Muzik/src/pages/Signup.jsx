@@ -4,15 +4,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { Notify } from "../utils/toast.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { Spinner } from "react-spinner-toolkit";
+import { FaEye } from 'react-icons/fa';
+import { FaEyeSlash } from 'react-icons/fa';
+import usePassword from "../hooks/usePassword.jsx";
 export default function SignUp() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { showPassword, handlePasswordVisibility, showConfirmPassword, handleConfirm, handleCheckPassword, passwordsMatch } = usePassword()
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -23,8 +28,7 @@ export default function SignUp() {
         (error) => {
           setError(error.message);
           fetch(
-            `https://api.ipgeolocation.io/ipgeo?apiKey=${
-              import.meta.env.VITE_IP_API_KEY
+            `https://api.ipgeolocation.io/ipgeo?apiKey=${import.meta.env.VITE_IP_API_KEY
             }`
           )
             .then((response) => response.json())
@@ -40,10 +44,14 @@ export default function SignUp() {
     } else {
       setError("Geolocation is not supported by your browser");
     }
+
+    handleCheckPassword(password, confirmPassword);
+
     if (isAuthenticated) {
       navigate("/home", { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, password, confirmPassword]);
+
   async function handleCreateUser(newUser) {
     try {
       const response = await register(newUser);
@@ -58,14 +66,21 @@ export default function SignUp() {
       setIsLoading(false);
     }
   }
+
   function handleSubmit(event) {
-    setIsLoading(true);
     event.preventDefault();
+    if (password !== confirmPassword) {
+      Notify("Passwords do not match");
+      return
+    }
+    setIsLoading(true);
     const user = { username, password, userLat, userLng };
     handleCreateUser(user);
     setUsername("");
     setPassword("");
+    setConfirmPassword("");
   }
+
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -80,6 +95,7 @@ export default function SignUp() {
       </div>
     );
   }
+
   return (
     <>
       <h1>Sound Map 🎵</h1>
@@ -93,15 +109,26 @@ export default function SignUp() {
             required
           />
         </label>
-        <label>
+        <label className="password">
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Create a password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
-          />
+          /><div className="toggle-password" onClick={handlePasswordVisibility}>{showPassword ? <FaEye /> : <FaEyeSlash />}</div>
         </label>
+        <label className="password">
+          <input
+            className={!passwordsMatch ? "error" : ""}
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            required
+          /><div className="toggle-password" onClick={handleConfirm}>{showConfirmPassword ? <FaEye /> : <FaEyeSlash />}</div>
+        </label>
+        {confirmPassword && !passwordsMatch && <p className="error-msg">Passwords do not match !</p>}
         <button type="submit">Sign up!</button>
       </form>
       <span>
