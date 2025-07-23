@@ -17,7 +17,18 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
     setToken(null);
   }
-  const isAuthenticated = !!token;
+  function isTokenExpired(token) {
+    if (!token) return true;
+    try {
+      const decoded = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp < currentTime;
+    } catch (error) {
+      return true;
+    }
+  }
+  const isExpired = isTokenExpired(token);
+  const isAuthenticated = !!token && !isExpired;
   async function checkAdmin() {
     try {
       const result = await isAdmin();

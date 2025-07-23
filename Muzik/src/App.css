@@ -69,6 +69,15 @@ button:hover {
 form {
   max-width: 19rem;
   padding: 7rem;
+  margin: 0 auto;
+}
+
+#sign-up-form,
+#log-in-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
 }
 
 input {
@@ -95,6 +104,20 @@ label {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.password {
+  display: flex;
+  gap: 2rem;
+}
+
+.toggle-password {
+  display: flex;
+  gap: 2rem;
+  font-size: 2rem;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .modal-content-container {
@@ -579,4 +602,15 @@ label {
 .cluster-pause {
   color: white;
   font-size: 1.6rem;
+}
+
+.error {
+  border-color: red;
+}
+
+.error-msg {
+  color: red;
+  font-size: 1.5rem;
+  margin-top: 0.2rem;
+  margin-bottom: 3rem;
 }
