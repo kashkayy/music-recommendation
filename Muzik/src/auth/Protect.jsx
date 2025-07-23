@@ -4,7 +4,7 @@ export default function ProtectedRoute() {
   const { isAuthenticated } = useAuth();
   return (
     <>
-      {isAuthenticated ? <Outlet /> : <Navigate to={"/auth/login"} replace />}
+      {isAuthenticated ? <Outlet /> : <Navigate to={"/"} replace />}
     </>
   );
 }
