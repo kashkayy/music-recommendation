@@ -56,11 +56,16 @@ export async function getAllUsers(adminRegion, userRole) {
 export async function getAllSongs(adminRegion, userRole) {
   try {
     if (userRole === Role.admin) {
-      return await prisma.savedSong.findMany();
+      return await prisma.savedSong.findMany({
+        select: {
+          song: true,
+        },
+      });
     }
     if (userRole === Role.regionAdmin) {
       return await prisma.savedSong.findMany({
         where: { region: adminRegion },
+        select: { song: true },
       });
     }
   } catch (error) {
