@@ -11,8 +11,8 @@ export default function SignUp() {
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
   const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const { isAuthenticated } = useAuth()
+  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated } = useAuth();
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -23,7 +23,8 @@ export default function SignUp() {
         (error) => {
           setError(error.message);
           fetch(
-            `https://api.ipgeolocation.io/ipgeo?apiKey=${import.meta.env.VITE_IP_API_KEY
+            `https://api.ipgeolocation.io/ipgeo?apiKey=${
+              import.meta.env.VITE_IP_API_KEY
             }`
           )
             .then((response) => response.json())
@@ -54,27 +55,30 @@ export default function SignUp() {
     } catch (err) {
       Notify("Signup failed");
     } finally {
-      setIsLoaded(true)
+      setIsLoading(false);
     }
   }
   function handleSubmit(event) {
+    setIsLoading(true);
     event.preventDefault();
     const user = { username, password, userLat, userLng };
     handleCreateUser(user);
     setUsername("");
     setPassword("");
   }
-  if (!isLoaded) {
-    return <div className="loading-container">
-      <Spinner
-        shape="threeDots"
-        color="#888"
-        loading
-        speed={1}
-        size={300}
-        transition={true}
-      />
-    </div>
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <Spinner
+          shape="threeDots"
+          color="#888"
+          loading
+          speed={1}
+          size={300}
+          transition={true}
+        />
+      </div>
+    );
   }
   return (
     <>

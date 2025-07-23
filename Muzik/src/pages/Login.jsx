@@ -8,7 +8,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const { login: saveToken, isAuthenticated } = useAuth();
   useEffect(() => {
     if (isAuthenticated) {
@@ -35,6 +35,7 @@ export default function Login() {
     }
   }
   function handleSubmit(event) {
+    setIsLoading(true);
     event.preventDefault();
     const user = { username, password };
     handleLogin(user);
@@ -42,16 +43,18 @@ export default function Login() {
     setPassword("");
   }
   if (isLoading) {
-    return <div className="loading-container">
-      <Spinner
-        shape="threeDots"
-        color="#888"
-        loading
-        speed={1}
-        size={300}
-        transition={true}
-      />
-    </div>
+    return (
+      <div className="loading-container">
+        <Spinner
+          shape="threeDots"
+          color="#888"
+          loading
+          speed={1}
+          size={300}
+          transition={true}
+        />
+      </div>
+    );
   }
   return (
     <>
