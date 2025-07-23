@@ -33,6 +33,7 @@ router.post("/login", async (req, res) => {
           role: user.role,
           region: user.region,
           isBanned: user.isBanned,
+          username: user.username,
         },
         process.env.JWT_SECRET_KEY,
         { expiresIn: "1h" }

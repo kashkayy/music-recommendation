@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api";
 import { useAuth } from "../auth/AuthContext";
+import { Notify } from "../utils/toast";
+import { Spinner } from "react-spinner-toolkit";
 export default function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { login: saveToken } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const { login: saveToken, isAuthenticated } = useAuth();
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/home", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
   async function handleLogin(user) {
     try {
       const response = await login(user);
@@ -14,23 +22,39 @@ export default function Login() {
         saveToken(response.token);
         navigate("/home", {
           replace: true,
-          state: { username: user.username },
         });
       } else if (response.status === 401) {
-        alert(response.message);
+        Notify(response.message);
       } else {
-        alert(response.message);
+        Notify(response.message);
       }
     } catch (err) {
-      alert("Login failed. Try again");
+      Notify("Login failed. Try again");
+    } finally {
+      setIsLoading(false);
     }
   }
   function handleSubmit(event) {
+    setIsLoading(true);
     event.preventDefault();
     const user = { username, password };
     handleLogin(user);
     setUsername("");
     setPassword("");
+  }
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <Spinner
+          shape="threeDots"
+          color="#888"
+          loading
+          speed={1}
+          size={300}
+          transition={true}
+        />
+      </div>
+    );
   }
   return (
     <>
@@ -47,7 +71,7 @@ export default function Login() {
         </label>
         <label>
           <input
-            type="text"
+            type="password"
             placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}

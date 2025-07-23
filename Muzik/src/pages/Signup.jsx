@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { register } from "../api.js";
 import { Link, useNavigate } from "react-router-dom";
 import { Notify } from "../utils/toast.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
+import { Spinner } from "react-spinner-toolkit";
 export default function SignUp() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -9,6 +11,8 @@ export default function SignUp() {
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated } = useAuth();
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -36,7 +40,10 @@ export default function SignUp() {
     } else {
       setError("Geolocation is not supported by your browser");
     }
-  }, []);
+    if (isAuthenticated) {
+      navigate("/home", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
   async function handleCreateUser(newUser) {
     try {
       const response = await register(newUser);
@@ -47,14 +54,31 @@ export default function SignUp() {
       }
     } catch (err) {
       Notify("Signup failed");
+    } finally {
+      setIsLoading(false);
     }
   }
   function handleSubmit(event) {
+    setIsLoading(true);
     event.preventDefault();
     const user = { username, password, userLat, userLng };
     handleCreateUser(user);
     setUsername("");
     setPassword("");
+  }
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <Spinner
+          shape="threeDots"
+          color="#888"
+          loading
+          speed={1}
+          size={300}
+          transition={true}
+        />
+      </div>
+    );
   }
   return (
     <>
@@ -71,7 +95,7 @@ export default function SignUp() {
         </label>
         <label>
           <input
-            type="text"
+            type="password"
             placeholder="Create a password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
