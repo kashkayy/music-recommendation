@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminContent from "./containers/AdminContent";
 import AdminProtectedRoute from "./auth/AdminProtect";
+import NotFound from "./components/NotFound";
 function App() {
   return (
     <AuthProvider>
@@ -22,6 +23,7 @@ function App() {
               <Route path="/admin/dashboard" element={<AdminContent />}></Route>
             </Route>
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer />
