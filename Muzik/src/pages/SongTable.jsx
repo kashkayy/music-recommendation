@@ -25,9 +25,9 @@ export default function SongTable({ columns, data }) {
           </thead>
           <tbody>
             {data.slice(startIndex, endIndex).map((row) => (
-              <tr key={row.id}>
+              <tr key={row.song.id}>
                 {columns.map((column) => (
-                  <td key={column.key}>{row[column.key]}</td>
+                  <td key={column.key}>{row.song[column.key]}</td>
                 ))}
               </tr>
             ))}
