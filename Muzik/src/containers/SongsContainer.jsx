@@ -6,6 +6,8 @@ import { Spinner } from "react-spinner-toolkit";
 import AudioPlayer from "../components/AudioPlayer";
 import { FaPlay, FaPause } from "react-icons/fa";
 import useSongPlayer from "../hooks/SongPlayer";
+import useRecommendation from "../hooks/useRecommendation";
+import { useAuth } from "../auth/AuthContext.jsx";
 export default function SongsContainer({
   userLat,
   userLng,
@@ -24,14 +26,21 @@ export default function SongsContainer({
     currSong,
     isClicked,
   } = useSongPlayer();
+  const { getRecommendations, recommendationsLoading, recommendations, recommendationsError } =
+    useRecommendation();
+  const { user } = useAuth();
   useEffect(() => {
     getUserFavorites().then((data) => {
       setFavorites(data.results);
       setIsLoaded(true);
     });
-  }, []);
+    if (userLat && userLng && user?.id) {
+      getRecommendations(userLat, userLng, range, user.id);
+    }
+  }, [userLat, userLng, user?.id]);
   const [showModal, setShowModal] = useState(false);
   const [query, setQuery] = useState("");
+  const [range, setRange] = useState(5);
   function handleClick(event) {
     event.preventDefault();
     setShowModal(true);
@@ -56,11 +65,87 @@ export default function SongsContainer({
     ).then((data) => {
       if (data.ok) {
         setFavorites(data.results);
+        if (userLat && userLng && user?.id) {
+          getRecommendations(userLat, userLng, range, user.id);
+        }
       }
     });
   }
   function handleHide() {
     setShowModal(false);
+  }
+  function renderRecommendations() {
+    if (recommendationsError) {
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            fontSize: "2rem",
+          }}
+        >
+          ⚠️ {recommendationsError}
+        </div>
+      );
+    } if (recommendations.length === 0) {
+      return <div className="rec-error">No recommendations within this area</div>;
+    } return recommendations.map((recommendation) => (
+      <div
+        className="song-card"
+        key={recommendation.song.id}
+        onClick={() => handleCardClick(recommendation.song)}
+      >
+        <div className="card-img-wrapper">
+          <img
+            className="card-image"
+            src={recommendation.song.coverUrl}
+          />
+          <div
+            className="play-pause-button"
+            onClick={(event) =>
+              handlePlayPauseClick(recommendation.song, event)
+            }
+          >
+            {checkSongPlaying(recommendation.song) && isPlaying ? (
+              <FaPause />
+            ) : (
+              <FaPlay />
+            )}
+          </div>
+          {isClicked && checkSongPlaying(recommendation.song) && (
+            <AudioPlayer
+              song={currSong}
+              selectedArtist={artist}
+              selectedTitle={title}
+              onEnd={handleEnd}
+              isPlaying={isPlaying}
+            />
+          )}
+        </div>
+        <div className="card-info">
+          <h3 className="card-song">{recommendation.song.title}</h3>
+          <p className="card-artist">{recommendation.song.artist}</p>
+          <p className="card-distance">
+            {recommendation.distance.toFixed(1)} km away
+          </p>
+        </div>
+        <div className="action">
+          <button
+            className="add-button"
+            onClick={(event) =>
+              handleAddToFavorite(
+                recommendation.song,
+                recommendation.lat,
+                recommendation.lng,
+                event
+              )
+            }
+          >
+            Add to favorites
+          </button>
+        </div>
+      </div>
+    ))
   }
   return (
     <>
@@ -85,7 +170,22 @@ export default function SongsContainer({
       )}
       <div className="recommended-container">
         <h3 className="songs-header">Recommended songs for you</h3>
-        <div className="recommended-songs"></div>
+        {recommendationsLoading ? (
+          <div className="loading-container">
+            <Spinner
+              shape="threeDots"
+              color="#888"
+              loading
+              speed={1}
+              size={300}
+              transition={true}
+            />
+          </div>
+        ) : (
+          <div className="recommended-songs">
+            {renderRecommendations()}
+          </div>
+        )}
       </div>
       <h2 className="songs-header">Your favorites list</h2>
       {isLoaded ? (
