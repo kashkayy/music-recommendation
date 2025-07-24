@@ -26,8 +26,15 @@ export default function SongsContainer({
     currSong,
     isClicked,
   } = useSongPlayer();
-  const { getRecommendations, recommendationsLoading, recommendations, recommendationsError } =
-    useRecommendation();
+
+  const {
+    getRecommendations,
+    recommendationsLoading,
+    recommendations,
+    recommendationsError,
+    range,
+    handleRangeChange,
+  } = useRecommendation();
   const { user } = useAuth();
   useEffect(() => {
     getUserFavorites().then((data) => {
@@ -37,10 +44,9 @@ export default function SongsContainer({
     if (userLat && userLng && user?.id) {
       getRecommendations(userLat, userLng, range, user.id);
     }
-  }, [userLat, userLng, user?.id]);
+  }, [userLat, userLng, user?.id, getRecommendations]);
   const [showModal, setShowModal] = useState(false);
   const [query, setQuery] = useState("");
-  const [range, setRange] = useState(5);
   function handleClick(event) {
     event.preventDefault();
     setShowModal(true);
@@ -74,6 +80,8 @@ export default function SongsContainer({
   function handleHide() {
     setShowModal(false);
   }
+  //used to conditionally render distance info
+  const distCheck = 0.5;
   function renderRecommendations() {
     if (recommendationsError) {
       return (
@@ -87,19 +95,20 @@ export default function SongsContainer({
           ⚠️ {recommendationsError}
         </div>
       );
-    } if (recommendations.length === 0) {
-      return <div className="rec-error">No recommendations within this area</div>;
-    } return recommendations.map((recommendation) => (
+    }
+    if (recommendations.length === 0) {
+      return (
+        <div className="rec-error">No recommendations within this area</div>
+      );
+    }
+    return recommendations.map((recommendation) => (
       <div
         className="song-card"
         key={recommendation.song.id}
         onClick={() => handleCardClick(recommendation.song)}
       >
         <div className="card-img-wrapper">
-          <img
-            className="card-image"
-            src={recommendation.song.coverUrl}
-          />
+          <img className="card-image" src={recommendation.song.coverUrl} />
           <div
             className="play-pause-button"
             onClick={(event) =>
@@ -126,7 +135,9 @@ export default function SongsContainer({
           <h3 className="card-song">{recommendation.song.title}</h3>
           <p className="card-artist">{recommendation.song.artist}</p>
           <p className="card-distance">
-            {recommendation.distance.toFixed(1)} km away
+            {recommendation.distance.toFixed(2) > distCheck
+              ? `${recommendation.distance.toFixed(2)} km away`
+              : `saved nearby`}
           </p>
         </div>
         <div className="action">
@@ -145,7 +156,7 @@ export default function SongsContainer({
           </button>
         </div>
       </div>
-    ))
+    ));
   }
   return (
     <>
@@ -169,7 +180,19 @@ export default function SongsContainer({
         />
       )}
       <div className="recommended-container">
-        <h3 className="songs-header">Recommended songs for you</h3>
+        <div className="rec-header-container">
+          <h3 className="songs-header">Recommended songs for you</h3>
+          <div className="range-slider">
+            <label className="search-radius">Search radius: {range} km</label>
+            <input
+              type="range"
+              min="1"
+              max="50"
+              value={range}
+              onChange={handleRangeChange}
+            />
+          </div>
+        </div>
         {recommendationsLoading ? (
           <div className="loading-container">
             <Spinner
@@ -182,9 +205,7 @@ export default function SongsContainer({
             />
           </div>
         ) : (
-          <div className="recommended-songs">
-            {renderRecommendations()}
-          </div>
+          <div className="recommended-songs">{renderRecommendations()}</div>
         )}
       </div>
       <h2 className="songs-header">Your favorites list</h2>
