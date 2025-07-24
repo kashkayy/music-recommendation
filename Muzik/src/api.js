@@ -76,6 +76,10 @@ export async function saveSong(songId, lat, lng, title, artist, coverUrl) {
     },
     body: JSON.stringify({ songId, lat, lng, title, artist, coverUrl }),
   });
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  Notify("Successfully added to favorites!");
   const data = await res.json();
   return data;
 }
@@ -197,4 +201,16 @@ export async function getClusterSongs(lat, lng, zoom) {
   }
   const data = await res.json();
   return data;
+}
+export async function getUserRecommendation(userLat, userLng, range, userId) {
+  const authCheck = getAuthHeaders();
+  const res = await fetch(
+    `${BASE_URL}/auth/recommendation?userLat=${userLat}&userLng=${userLng}&range=${range}&userId=${userId}`,
+    authCheck
+  );
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  const data = await res.json();
+  return data.results;
 }
