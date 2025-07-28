@@ -195,3 +195,21 @@ function deflateMatrix(matrix, sigma, u, v) {
   const newMatrix = matrixSubtract(matrix, outerProductMatrixScaled);
   return newMatrix;
 }
+
+//This is the main SVD FUNCTION that returns top K patterns in a matrix using power iteration and deflation of matrix.
+//This function returns: the strength/ importance of each pattern, the pattern itself(rightVectors) and how users correspond with these patterns
+export default function singularValueDecomposition(matrix, k = 10) {
+  let matrixCopy = createDeepCopyMatrix(matrix);
+  const singularValues = [];
+  const rightVectors = [];
+  const leftVectors = [];
+  for (let i = 0; i < k; i++) {
+    const result = powerIteration(matrixCopy);
+    const { v, sigma, u } = result;
+    singularValues.push(sigma);
+    leftVectors.push(u);
+    rightVectors.push(v);
+    matrixCopy = deflateMatrix(matrixCopy, sigma, u, v);
+  }
+  return { singularValues, leftVectors, rightVectors };
+}
