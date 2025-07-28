@@ -8,6 +8,8 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import useSongPlayer from "../hooks/SongPlayer";
 import useRecommendation from "../hooks/useRecommendation";
 import { useAuth } from "../auth/AuthContext.jsx";
+import { useRef } from "react";
+import NowPlaying from "../components/NowPlaying.jsx";
 export default function SongsContainer({
   userLat,
   userLng,
@@ -15,6 +17,15 @@ export default function SongsContainer({
   setFavorites,
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const songRef = useRef({});
+  function registerRef(id, element) {
+    if (!element) return;
+    songRef.current[id] = element;
+  }
+  function scrollToSong(id) {
+    if (!id || !songRef.current[id]) return;
+    songRef.current[id].scrollIntoView({ behavior: "smooth", block: "center" });
+  }
   const {
     isPlaying,
     checkSongPlaying,
@@ -49,7 +60,9 @@ export default function SongsContainer({
   const [query, setQuery] = useState("");
   function handleClick(event) {
     event.preventDefault();
-    setShowModal(true);
+    if (query) {
+      setShowModal(true);
+    }
   }
   async function handleRemove(songId, lat, lng, event) {
     event.stopPropagation();
@@ -103,8 +116,11 @@ export default function SongsContainer({
     }
     return recommendations.map((recommendation) => (
       <div
-        className="song-card"
+        className={`song-card ${
+          checkSongPlaying(recommendation.song) ? "playing" : ""
+        }`}
         key={recommendation.song.id}
+        ref={(element) => registerRef(recommendation.song.id, element)}
         onClick={() => handleCardClick(recommendation.song)}
       >
         <div className="card-img-wrapper">
@@ -179,6 +195,13 @@ export default function SongsContainer({
           userLng={userLng}
         />
       )}
+      {currSong && (
+        <NowPlaying
+          currSong={currSong}
+          isPlaying={isPlaying}
+          onPlaying={() => scrollToSong(currSong.id)}
+        />
+      )}
       <div className="recommended-container">
         <div className="rec-header-container">
           <h3 className="songs-header">Recommended songs for you</h3>
@@ -208,74 +231,79 @@ export default function SongsContainer({
           <div className="recommended-songs">{renderRecommendations()}</div>
         )}
       </div>
-      <h2 className="songs-header">Your favorites list</h2>
-      {isLoaded ? (
-        <div className="favorite-songs">
-          {favorites.map((favorite) => (
-            <div
-              className="song-card"
-              key={favorite.song.id}
-              onClick={() => handleCardClick(favorite.song)}
-            >
-              <div className="card-img-wrapper">
-                <img className="card-image" src={favorite.song.coverUrl} />
-                <div
-                  className="play-pause-button"
-                  onClick={(event) =>
-                    handlePlayPauseClick(favorite.song, event)
-                  }
-                >
-                  {checkSongPlaying(favorite.song) && isPlaying ? (
-                    <FaPause />
-                  ) : (
-                    <FaPlay />
+      <div className="fav-container">
+        <h2 className="songs-header">Your favorites list</h2>
+        {isLoaded ? (
+          <div className="favorite-songs">
+            {favorites.map((favorite) => (
+              <div
+                className={`song-card ${
+                  checkSongPlaying(favorite.song) ? "playing" : ""
+                }`}
+                key={favorite.song.id}
+                onClick={() => handleCardClick(favorite.song)}
+                ref={(element) => registerRef(favorite.song.id, element)}
+              >
+                <div className="card-img-wrapper">
+                  <img className="card-image" src={favorite.song.coverUrl} />
+                  <div
+                    className="play-pause-button"
+                    onClick={(event) =>
+                      handlePlayPauseClick(favorite.song, event)
+                    }
+                  >
+                    {checkSongPlaying(favorite.song) && isPlaying ? (
+                      <FaPause />
+                    ) : (
+                      <FaPlay />
+                    )}
+                  </div>
+                  {isClicked && checkSongPlaying(favorite.song) && (
+                    <AudioPlayer
+                      song={currSong}
+                      selectedArtist={artist}
+                      selectedTitle={title}
+                      onEnd={handleEnd}
+                      isPlaying={isPlaying}
+                    />
                   )}
                 </div>
-                {isClicked && checkSongPlaying(favorite.song) && (
-                  <AudioPlayer
-                    song={currSong}
-                    selectedArtist={artist}
-                    selectedTitle={title}
-                    onEnd={handleEnd}
-                    isPlaying={isPlaying}
-                  />
-                )}
-              </div>
-              <div className="card-info">
-                <h3 className="card-song">{favorite.song.title}</h3>
-                <p className="card-artist">{favorite.song.artist}</p>
-              </div>
-              <div className="action">
-                <div>
-                  <IoRemoveCircleOutline
-                    className="delete-action"
-                    onClick={(event) =>
-                      handleRemove(
-                        favorite.songId,
-                        favorite.lat,
-                        favorite.lng,
-                        event
-                      )
-                    }
-                    title="Remove from favorites"
-                  />
+                <div className="card-info">
+                  <h3 className="card-song">{favorite.song.title}</h3>
+                  <p className="card-artist">{favorite.song.artist}</p>
+                </div>
+                <div className="action">
+                  <div>
+                    <IoRemoveCircleOutline
+                      className="delete-action"
+                      onClick={(event) =>
+                        handleRemove(
+                          favorite.songId,
+                          favorite.lat,
+                          favorite.lng,
+                          event
+                        )
+                      }
+                      title="Remove from favorites"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="loading-container">
-          <Spinner
-            shape="threeDots"
-            color="#888"
-            loading
-            speed={1}
-            size={300}
-            transition={true}
-          />
-        </div>
-      )}
+            ))}
+          </div>
+        ) : (
+          <div className="loading-container">
+            <Spinner
+              shape="threeDots"
+              color="#888"
+              loading
+              speed={1}
+              size={300}
+              transition={true}
+            />
+          </div>
+        )}
+      </div>
     </>
   );
 }

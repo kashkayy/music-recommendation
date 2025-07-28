@@ -28,6 +28,7 @@ export default function SearchModal({
     isClicked,
   } = useSongPlayer();
   useEffect(() => {
+    if (!query) return;
     getSearchResults(query).then((data) => {
       setResults(data.results);
       setIsLoaded(true);
