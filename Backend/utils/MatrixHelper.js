@@ -153,3 +153,45 @@ function powerIteration(matrix, maxIterations = 100, tolerance = 0.999) {
   const u = normalizeVector(multiplied);
   return { v: normalized, sigma: sigma, u: u };
 }
+
+function outerProduct(vector1, vector2) {
+  if (!Array.isArray(vector1) || !Array.isArray(vector2)) {
+    throw new Error("Inputs must be arrays.");
+  }
+  const rows = vector1.length;
+  const cols = vector2.length;
+  const resultMatrix = [];
+  for (let i = 0; i < rows; i++) {
+    resultMatrix[i] = new Array(cols).fill(0);
+  }
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      resultMatrix[i][j] = vector1[i] * vector2[j];
+    }
+  }
+  return resultMatrix;
+}
+
+function matrixSubtract(m1, m2) {
+  if (m1.length !== m2.length || m1[0].length !== m2[0].length) {
+    throw new Error("Matrices must be same dimension");
+  }
+  const result = Array(m1.length)
+    .fill(0)
+    .map(() => Array(m1[0].length).fill(0));
+  for (let i = 0; i < m1.length; i++) {
+    for (let j = 0; j < m1[0].length; j++) {
+      result[i][j] = m1[i][j] - m2[i][j];
+    }
+  }
+  return result;
+}
+// DEFLATE THE MATRIX TO GET THE NEXT MOST IMPORTANT PATTERN
+/* We accomplis this by building a new matrix from the left and right singular vectors and scaling this new matrix by the importance of the leading latent feature found in power iteration.
+We then subtract this new matrix from our original data matrix so we can find the next leading pattern/feature */
+function deflateMatrix(matrix, sigma, u, v) {
+  const outerProductMatrix = outerProduct(u, v);
+  const outerProductMatrixScaled = matrixScalar(outerProductMatrix, sigma);
+  const newMatrix = matrixSubtract(matrix, outerProductMatrixScaled);
+  return newMatrix;
+}
