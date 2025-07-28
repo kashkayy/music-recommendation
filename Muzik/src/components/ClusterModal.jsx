@@ -30,9 +30,9 @@ export default function ClusterModal({
     currSong,
     isClicked,
     handleMouseLeave,
-    isHovering
+    isHovering,
   } = useSongPlayer();
-  const debouncedMouseEnter = useDebounce(handleMouseEnter, 500);
+  const debouncedMouseEnter = useDebounce(handleMouseEnter, 700);
   useEffect(() => {
     getClusterSongs(lat, lng, zoom)
       .then((data) => {
@@ -76,7 +76,7 @@ export default function ClusterModal({
     }
     return songs.map((song, index) => (
       <div className="song-info" key={index}>
-        <div className="song-img-container" style={{ position: 'relative' }}>
+        <div className="song-img-container" style={{ position: "relative" }}>
           <img
             src={song.coverurl}
             alt="song preview Image"
@@ -85,7 +85,9 @@ export default function ClusterModal({
             onMouseLeave={handleMouseLeave}
           />
           <div
-            className={`preview-indicator ${checkSongPlaying(song) ? 'active' : ''}`}
+            className={`preview-indicator ${
+              checkSongPlaying(song) ? "active" : ""
+            }`}
           >
             {checkSongPlaying(song) && isPlaying ? (
               <FaPause className="cluster-pause" />
