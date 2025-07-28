@@ -10,6 +10,7 @@ import useRecommendation from "../hooks/useRecommendation";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { useRef } from "react";
 import NowPlaying from "../components/NowPlaying.jsx";
+import { MODES } from "../utils/recModes.js";
 export default function SongsContainer({
   userLat,
   userLng,
@@ -17,6 +18,11 @@ export default function SongsContainer({
   setFavorites,
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [mode, setMode] = useState(MODES.HAV);
+  function handleModeSwitch(mode, event) {
+    event.preventDefault();
+    setMode(mode);
+  }
   const songRef = useRef({});
   function registerRef(id, element) {
     if (!element) return;
@@ -114,65 +120,69 @@ export default function SongsContainer({
         <div className="rec-error">No recommendations within this area</div>
       );
     }
-    return recommendations.map((recommendation) => (
-      <div
-        className={`song-card ${
-          checkSongPlaying(recommendation.song) ? "playing" : ""
-        }`}
-        key={recommendation.song.id}
-        ref={(element) => registerRef(recommendation.song.id, element)}
-        onClick={() => handleCardClick(recommendation.song)}
-      >
-        <div className="card-img-wrapper">
-          <img className="card-image" src={recommendation.song.coverUrl} />
-          <div
-            className="play-pause-button"
-            onClick={(event) =>
-              handlePlayPauseClick(recommendation.song, event)
-            }
-          >
-            {checkSongPlaying(recommendation.song) && isPlaying ? (
-              <FaPause />
-            ) : (
-              <FaPlay />
+    return mode === MODES.HAV ? (
+      recommendations.map((recommendation) => (
+        <div
+          className={`song-card ${
+            checkSongPlaying(recommendation.song) ? "playing" : ""
+          }`}
+          key={recommendation.song.id}
+          ref={(element) => registerRef(recommendation.song.id, element)}
+          onClick={() => handleCardClick(recommendation.song)}
+        >
+          <div className="card-img-wrapper">
+            <img className="card-image" src={recommendation.song.coverUrl} />
+            <div
+              className="play-pause-button"
+              onClick={(event) =>
+                handlePlayPauseClick(recommendation.song, event)
+              }
+            >
+              {checkSongPlaying(recommendation.song) && isPlaying ? (
+                <FaPause />
+              ) : (
+                <FaPlay />
+              )}
+            </div>
+            {isClicked && checkSongPlaying(recommendation.song) && (
+              <AudioPlayer
+                song={currSong}
+                selectedArtist={artist}
+                selectedTitle={title}
+                onEnd={handleEnd}
+                isPlaying={isPlaying}
+              />
             )}
           </div>
-          {isClicked && checkSongPlaying(recommendation.song) && (
-            <AudioPlayer
-              song={currSong}
-              selectedArtist={artist}
-              selectedTitle={title}
-              onEnd={handleEnd}
-              isPlaying={isPlaying}
-            />
-          )}
+          <div className="card-info">
+            <h3 className="card-song">{recommendation.song.title}</h3>
+            <p className="card-artist">{recommendation.song.artist}</p>
+            <p className="card-distance">
+              {recommendation.distance.toFixed(2) > distCheck
+                ? `${recommendation.distance.toFixed(2)} km away`
+                : `saved nearby`}
+            </p>
+          </div>
+          <div className="action">
+            <button
+              className="add-button"
+              onClick={(event) =>
+                handleAddToFavorite(
+                  recommendation.song,
+                  recommendation.lat,
+                  recommendation.lng,
+                  event
+                )
+              }
+            >
+              Add to favorites
+            </button>
+          </div>
         </div>
-        <div className="card-info">
-          <h3 className="card-song">{recommendation.song.title}</h3>
-          <p className="card-artist">{recommendation.song.artist}</p>
-          <p className="card-distance">
-            {recommendation.distance.toFixed(2) > distCheck
-              ? `${recommendation.distance.toFixed(2)} km away`
-              : `saved nearby`}
-          </p>
-        </div>
-        <div className="action">
-          <button
-            className="add-button"
-            onClick={(event) =>
-              handleAddToFavorite(
-                recommendation.song,
-                recommendation.lat,
-                recommendation.lng,
-                event
-              )
-            }
-          >
-            Add to favorites
-          </button>
-        </div>
-      </div>
-    ));
+      ))
+    ) : (
+      <div>TEST MODE SWITCH</div>
+    );
   }
   return (
     <>
@@ -205,16 +215,30 @@ export default function SongsContainer({
       <div className="recommended-container">
         <div className="rec-header-container">
           <h3 className="songs-header">Recommended songs for you</h3>
-          <div className="range-slider">
-            <label className="search-radius">Search radius: {range} km</label>
-            <input
-              type="range"
-              min="1"
-              max="50"
-              value={range}
-              onChange={handleRangeChange}
-            />
+          <div className="rec-switch">
+            <div className="rec-btns">
+              {Object.keys(MODES).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={(event) => handleModeSwitch(MODES[mode], event)}
+                >
+                  {MODES[mode]}
+                </button>
+              ))}
+            </div>
           </div>
+          {mode === MODES.HAV && (
+            <div className="range-slider">
+              <label className="search-radius">Search radius: {range} km</label>
+              <input
+                type="range"
+                min="1"
+                max="50"
+                value={range}
+                onChange={handleRangeChange}
+              />
+            </div>
+          )}
         </div>
         {recommendationsLoading ? (
           <div className="loading-container">
@@ -304,6 +328,7 @@ export default function SongsContainer({
           </div>
         )}
       </div>
+      {console.log(mode)}
     </>
   );
 }
