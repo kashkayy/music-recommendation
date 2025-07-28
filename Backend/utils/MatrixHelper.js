@@ -121,3 +121,35 @@ function createRandomVector(n) {
     .fill(0)
     .map(() => Math.random());
 }
+/* LOOK FOR THE MOST IMPORTANT PATTERN.
+THIS FUNCTION SHOULD RETURN THE IMPORTANCE OF THE FOUND PATTERN, AS WELL AS HOW EACH USER CORRESPONDS WITH THE PATTERN FOUND FROM SONGS*/
+function powerIteration(matrix, maxIterations = 100, tolerance = 0.999) {
+  //start with random vector to prevent bias in finiding this pattern's direction(taking a random guess)
+  const startingVector = createRandomVector(matrix[0].length);
+  //normalize(convert to unit vec)this guess to ensure we're only focusing on the direction and not how much it is actually stretched by matrix
+  let normalized = normalizeVector(startingVector);
+  const transposed = transpose(matrix);
+  let converged = false;
+  for (let i = 0; i < maxIterations; i++) {
+    // Multiplies our guess with the data matrix and the matrix transforms our guess
+    const multiplied = matrixVectorMultiply(matrix, normalized);
+    // This points towrds the dominant eigenvector
+    const transProduct = matrixVectorMultiply(transposed, multiplied);
+    // Updated guess(due to feedback from iteration) is normalized to focus on direction
+    const normalized2 = normalizeVector(transProduct);
+    //This checks the closeness in direction between both guesses
+    const similarity = Math.abs(dotProduct(normalized, normalized2));
+    if (similarity >= tolerance) {
+      converged = true;
+      break;
+    }
+    //update our guess if direction not similar enough
+    normalized = normalized2;
+  }
+  const multiplied = matrixVectorMultiply(matrix, normalized);
+  // importance of pattern found
+  const sigma = getVectorMagnitude(multiplied);
+  //represents how much the users correspond with this pattern
+  const u = normalizeVector(multiplied);
+  return { v: normalized, sigma: sigma, u: u };
+}
