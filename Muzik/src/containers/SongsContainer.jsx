@@ -11,6 +11,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { useRef } from "react";
 import NowPlaying from "../components/NowPlaying.jsx";
 import { MODES } from "../utils/recModes.js";
+import SVD from "../components/SvdRecommendations.jsx";
 export default function SongsContainer({
   userLat,
   userLng,
@@ -115,13 +116,15 @@ export default function SongsContainer({
         </div>
       );
     }
-    if (recommendations.length === 0) {
+    if (recommendations.length === 0 && mode !== MODES.SVD) {
       return (
-        <div className="rec-error">No recommendations within this area</div>
+        <div className="rec-error">
+          No recommendations within this area. Try increasing the range!
+        </div>
       );
     }
-    return mode === MODES.HAV ? (
-      recommendations.map((recommendation) => (
+    if (mode === MODES.HAV) {
+      return recommendations.map((recommendation) => (
         <div
           className={`song-card ${
             checkSongPlaying(recommendation.song) ? "playing" : ""
@@ -179,10 +182,12 @@ export default function SongsContainer({
             </button>
           </div>
         </div>
-      ))
-    ) : (
-      <div>TEST MODE SWITCH</div>
-    );
+      ));
+    } else if (mode === MODES.SVD) {
+      return (
+        <SVD onSave={handleAddToFavorite} userLat={userLat} userLng={userLng} />
+      );
+    }
   }
   return (
     <>
@@ -214,7 +219,7 @@ export default function SongsContainer({
       )}
       <div className="recommended-container">
         <div className="rec-header-container">
-          <h3 className="songs-header">Recommended songs for you</h3>
+          <h3 className="songs-header">Recommended songs</h3>
           <div className="rec-switch">
             <div className="rec-btns">
               {Object.keys(MODES).map((mode) => (
@@ -227,7 +232,7 @@ export default function SongsContainer({
               ))}
             </div>
           </div>
-          {mode === MODES.HAV && (
+          {mode !== MODES.SVD && (
             <div className="range-slider">
               <label className="search-radius">Search radius: {range} km</label>
               <input
@@ -328,7 +333,6 @@ export default function SongsContainer({
           </div>
         )}
       </div>
-      {console.log(mode)}
     </>
   );
 }
