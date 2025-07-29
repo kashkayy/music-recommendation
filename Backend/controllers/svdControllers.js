@@ -79,7 +79,20 @@ export async function getSvdResults(userId, limit = 15) {
         id: { in: topPredictions.map((p) => p.songId) },
       },
     });
-    return recommendedSongs;
+    //Normalize topPrediction scores
+    const maxScore = Math.max(...topPredictions.map((p) => p.predictionScore));
+    const minScore = Math.min(...topPredictions.map((p) => p.predictionScore));
+    const results = recommendedSongs.map((song) => {
+      const prediction = topPredictions.find((p) => p.songId === song.id);
+      const rawScore = prediction.predictionScore;
+      const normScore = (rawScore - minScore) / (maxScore - minScore);
+      return {
+        ...song,
+        predictionScore: rawScore,
+        predictionNormScore: normScore,
+      };
+    });
+    return results;
   } catch (error) {
     throw new Error("Unable to get SVD recommendations.");
   }
