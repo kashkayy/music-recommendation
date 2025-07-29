@@ -30,7 +30,7 @@ export async function getUserRecommendations({
     const userSavedSongIds = new Set(
       userSavedSongs.map((saved) => saved.songId)
     );
-    function normalizeDistance(distance, min = 50, max = 1) {
+    function normalizeDistance(distance, min = range, max = 1) {
       const norm = (distance - min) / (max - min);
       return norm;
     }
