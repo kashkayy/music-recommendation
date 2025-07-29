@@ -43,7 +43,7 @@ export async function getSvdResults(userId, limit = 15) {
       return [];
     }
     // Number of patterns/leading singular values we wish to find
-    const numOfComponents = 5;
+    const numOfComponents = 10;
     const { singularValues, leftVectors, rightVectors } =
       singularValueDecomposition(matrix, numOfComponents);
     const userSavedSongs = await prisma.savedSong.findMany({
@@ -92,7 +92,7 @@ export async function getSvdResults(userId, limit = 15) {
         predictionNormScore: normScore,
       };
     });
-    return results;
+    return results.sort((a, b) => b.predictionScore - a.predictionScore);
   } catch (error) {
     throw new Error("Unable to get SVD recommendations.");
   }

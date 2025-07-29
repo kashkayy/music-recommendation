@@ -1,5 +1,8 @@
 import express from "express";
-import { getUserRecommendations, getHybridRecommendations } from "../controllers/recommendationControllers.js";
+import {
+  getUserRecommendations,
+  getHybridRecommendations,
+} from "../controllers/recommendationControllers.js";
 import { badReq, successRes } from "../utils/Response.js";
 import { parseObj } from "../utils/ParseObj.js";
 import { getSvdResults } from "../controllers/svdControllers.js";
@@ -18,12 +21,12 @@ router.get("/", async (req, res) => {
   }
 });
 router.get("/svd", authenticateToken, async (req, res) => {
-  const userId = req.user.id;
+  const { userId } = req.query;
   if (!userId) {
     return res.status(400).json(badReq("Invalid id"));
   }
   try {
-    const results = await getSvdResults(userId);
+    const results = await getSvdResults(parseInt(userId));
     res.status(200).json(successRes(results));
   } catch (error) {
     res.status(500).json(badReq("Error processing request"));
