@@ -214,3 +214,27 @@ export async function getUserRecommendation(userLat, userLng, range, userId) {
   const data = await res.json();
   return data.results;
 }
+export async function getSvdRecommendations(userId) {
+  const authCheck = getAuthHeaders();
+  const res = await fetch(
+    `${BASE_URL}/auth/recommendation/svd?userId=${userId}`,
+    authCheck
+  );
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  const data = await res.json();
+  return data.results;
+}
+export async function getHybridRecommendation(userLat, userLng, range, userId) {
+  const authCheck = getAuthHeaders();
+  const res = await fetch(
+    `${BASE_URL}/auth/recommendation/hybrid?userLat=${userLat}&userLng=${userLng}&range=${range}&userId=${userId}`,
+    authCheck
+  );
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+  const data = await res.json();
+  return data.results;
+}
