@@ -12,6 +12,7 @@ import { useRef } from "react";
 import NowPlaying from "../components/NowPlaying.jsx";
 import { MODES } from "../utils/recModes.js";
 import SVD from "../components/SvdRecommendations.jsx";
+import Hybrid from "../components/HybridRecommendations.jsx";
 export default function SongsContainer({
   userLat,
   userLng,
@@ -186,6 +187,16 @@ export default function SongsContainer({
     } else if (mode === MODES.SVD) {
       return (
         <SVD onSave={handleAddToFavorite} userLat={userLat} userLng={userLng} />
+      );
+    } else if (mode === MODES.HYBRID) {
+      return (
+        <Hybrid
+          onSave={handleAddToFavorite}
+          userLat={userLat}
+          userLng={userLng}
+          range={range}
+          userId={user.id}
+        />
       );
     }
   }
