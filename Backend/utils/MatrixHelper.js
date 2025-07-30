@@ -1,59 +1,73 @@
 function createMatrix(rows, cols) {
-  const matrix = [];
+  if (rows <= 0 || cols <= 0) {
+    throw new Error("Invalid matrix dimension");
+  }
+  let matrix = [];
   for (let i = 0; i < rows; i++) {
-    matrix[i] = [];
-    for (let j = 0; j < cols; j++) {
-      matrix[i][j] = 0;
+    let row = [];
+    for (let i = 0; i < cols; i++) {
+      row.push(0);
     }
+    matrix.push(row);
   }
   return matrix;
 }
-
-function createIdentityMatrix(n) {
-  let identityMatrix = [];
-  for (let i = 0; i < n; i++) {
-    let row = [];
-    for (let j = 0; j < n; j++) {
-      if (i === j) {
-        row.push(1);
-      } else {
-        row.push(0);
-      }
-    }
-    identityMatrix.push(row);
+function createIdentityMatrix(rows, cols) {
+  if (rows <= 0 || cols <= 0) {
+    throw new Error("Matrix dimension must be positive integers.");
   }
-  return identityMatrix;
-}
-
-function addTwoMatrices(m1, m2) {
-  if (m1.length !== m2.length || m1[0].length !== m2[0].length) {
-    return;
-  }
-
-  const rows = m1.length;
-  const cols = m1[0].length;
-  const resultMatrix = [];
-
+  const matrix = [];
   for (let i = 0; i < rows; i++) {
-    resultMatrix[i] = [];
+    const row = [];
     for (let j = 0; j < cols; j++) {
-      resultMatrix[i][j] = m1[i][j] + m2[i][j];
+      row.push(i === j ? 1 : 0);
+    }
+    matrix.push(row);
+  }
+  return matrix;
+}
+function vectorAndConstantProduct(constant, vector) {
+  if (vector.length <= 0) {
+    throw new Error("Vector cannot be empty");
+  }
+  const results = vector.map((element) => element * constant);
+  return results;
+}
+function subtractVectors(v1, v2) {
+  if (v1.length !== v2.length) {
+    throw new Error("Vectors must be the same length!");
+  }
+  let newVector = [];
+  for (let i = 0; i < v1.length; i++) {
+    const result = v1[i] - v2[i];
+    newVector.push(result);
+  }
+  return newVector;
+}
+function multiplyMatrices(matrixA, matrixB) {
+  const rowsA = matrixA.length;
+  const colsA = matrixA[0].length;
+  const rowsB = matrixB.length;
+  const colsB = matrixB[0].length;
+  if (colsA !== rowsB) {
+    throw new Error(
+      "Number of columns in the first matrix must equal the number of rows in the second matrix."
+    );
+  }
+  const resultMatrix = Array(rowsA)
+    .fill(0)
+    .map(() => Array(colsB).fill(0));
+  for (let i = 0; i < rowsA; i++) {
+    for (let j = 0; j < colsB; j++) {
+      let sum = 0;
+      for (let k = 0; k < colsA; k++) {
+        sum += matrixA[i][k] * matrixB[k][j];
+      }
+      resultMatrix[i][j] = sum;
     }
   }
   return resultMatrix;
 }
-
-function addMultipleMatrices(...matrices) {
-  if (matrices.length === 0) {
-    return [];
-  }
-  let sumMatrix = matrices[0];
-  for (let i = 1; i < matrices.length; i++) {
-    sumMatrix = addTwoMatrices(sumMatrix, matrices[i]);
-  }
-  return sumMatrix;
-}
-
 function dotProduct(v1, v2) {
   if (v1.length !== v2.length) {
     throw new Error("Unequal lengths between both vectors");
@@ -196,20 +210,104 @@ function deflateMatrix(matrix, sigma, u, v) {
   return newMatrix;
 }
 
+function gramSchmidt(vectors) {
+  let orthonormalVectors = [];
+  for (let i = 0; i < vectors.length; i++) {
+    let v = vectors[i];
+    let u = Array.from(v); // Create a copy of the current vector
+    // Subtract the projections onto previously orthonormalized vectors
+    for (let j = 0; j < orthonormalVectors.length; j++) {
+      let u_j = orthonormalVectors[j];
+      let projection = vectorAndConstantProduct(dotProduct(v, u_j), u_j);
+      u = subtractVectors(u, projection);
+    }
+    // Normalize the resulting vector
+    let mag_u = getVectorMagnitude(u);
+    if (mag_u > 0) {
+      // Avoid division by zero
+      u = vectorAndConstantProduct(1 / mag_u, u);
+    }
+    orthonormalVectors.push(u);
+  }
+  return orthonormalVectors;
+}
+function qrDecomposition(matrix) {
+  const Q = gramSchmidt(matrix);
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  let R = createMatrix(rows, cols);
+  const Q_T = transpose(Q); // transpose to find R;
+  R = multiplyMatrices(Q_T, matrix);
+  for (let i = 1; i <= cols; i++) {
+    for (let j = 0; j < i; j++) {
+      R[i][j] = 0;
+    }
+  }
+  return { Q, R };
+}
+
+function lpDecomposition(matrix) {
+  const transposedMatrix = transpose(matrix);
+  const { Q, R } = gramSchmidt(transposedMatrix); //  Apply QR to the transposed matrix
+  return { L: transpose(R), P: transpose(Q) }; //  Transpose the result to get LQ
+}
+
+function qrBasedSvd(matrix, maxIterations = 2) {
+  let M = createDeepCopyMatrix(matrix); //  Copy matrix while working
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  let U = createIdentityMatrix(rows, rows); // Accumulates left singular vectors
+  let V = createIdentityMatrix(cols, cols); // Accumulates right singular vectors
+  for (let i = 0; i < maxIterations; i++) {
+    const { Q, R } = qrDecomposition(M);
+    const { L, P } = lpDecomposition(R);
+    M = L;
+
+    // Accumulate singular vectors
+    U = multiplyMatrices(U, Q);
+    V = multiplyMatrices(V, P);
+
+    // Check if matrix is diagonal
+    let sumOfOffDiagonal = 0;
+    for (let i = 0; i <= rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (i !== j) {
+          sumOfOffDiagonal += M[i][j];
+        }
+      }
+    }
+    if (sumOfOffDiagonal < 1e-2) {
+      // check if close to 0
+      break;
+    }
+  }
+  const S = M;
+  return { singularValues: S, leftVectors: U, rightVectors: V };
+}
+
 //This is the main SVD FUNCTION that returns top K patterns in a matrix using power iteration and deflation of matrix.
 //This function returns: the strength/ importance of each pattern, the pattern itself(rightVectors) and how users correspond with these patterns
 export default function singularValueDecomposition(matrix, k = 10) {
   let matrixCopy = createDeepCopyMatrix(matrix);
-  const singularValues = [];
-  const rightVectors = [];
-  const leftVectors = [];
-  for (let i = 0; i < k; i++) {
-    const result = powerIteration(matrixCopy);
-    const { v, sigma, u } = result;
-    singularValues.push(sigma);
-    leftVectors.push(u);
-    rightVectors.push(v);
-    matrixCopy = deflateMatrix(matrixCopy, sigma, u, v);
+  const SVD_METHODS = {
+    POWER: "power",
+    GRAM: "gram_schmidt",
+  };
+  let method = SVD_METHODS.POWER;
+  if (method == SVD_METHODS.POWER) {
+    const singularValues = [];
+    const rightVectors = [];
+    const leftVectors = [];
+    for (let i = 0; i < k; i++) {
+      const result = powerIteration(matrixCopy);
+      const { v, sigma, u } = result;
+      singularValues.push(sigma);
+      leftVectors.push(u);
+      rightVectors.push(v);
+      matrixCopy = deflateMatrix(matrixCopy, sigma, u, v);
+    }
+    return { singularValues, leftVectors, rightVectors };
+  } else {
+    return qrBasedSvd(matrix);
   }
-  return { singularValues, leftVectors, rightVectors };
 }
