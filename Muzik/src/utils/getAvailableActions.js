@@ -1,4 +1,4 @@
-import { canPerformAction, PERMISSIONS } from "../AdminSections";
+import { canPerformAction, PERMISSIONS } from "../admin/AdminSections";
 export function getAvailableActions(requester, target) {
   const results = [];
   Object.keys(PERMISSIONS).forEach((action) => {

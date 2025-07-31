@@ -1,5 +1,5 @@
 import { SECTIONS } from "./AdminSections";
-import { getAllUsers, getAllSongs } from "./api";
+import { getAllUsers, getAllSongs } from "../api";
 export async function fetchData(section) {
   switch (section) {
     case SECTIONS.USERS:

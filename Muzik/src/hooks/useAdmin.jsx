@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { toggleBan, toggleDemote, togglePromote } from "../api";
-import { ROLE, SECTIONS } from "../AdminSections";
+import { ROLE, SECTIONS } from "../admin/AdminSections";
 import { Notify } from "../utils/toast";
 export default function useAdmin(onChange) {
   const [pendingAction, setPendingAction] = useState(null);

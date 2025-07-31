@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { SECTIONS } from "../AdminSections";
+import { SECTIONS } from "../admin/AdminSections";
 import Sidebar from "../components/Sidebar";
 import Dashboard from "../pages/Dashboard";
 import UserTable from "../pages/UserTable";
 import SongTable from "../pages/SongTable";
-import { fetchData } from "../AdminData";
-import { tableColumns } from "../TableColumns";
+import { fetchData } from "../admin/AdminData";
+import { tableColumns } from "../admin/TableColumns";
 export default function AdminContent() {
   const [activeSection, setActiveSection] = useState(SECTIONS.DASHBOARD);
   const [sectionData, setSectionData] = useState([]);

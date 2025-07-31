@@ -1,4 +1,4 @@
-import { ACTIONS } from "../AdminSections";
+import { ACTIONS } from "../admin/AdminSections";
 import * as DropDownMenu from "@radix-ui/react-dropdown-menu";
 import { getAvailableActions } from "../utils/getAvailableActions";
 export default function AdminButtons({ requester, target, onAction }) {
