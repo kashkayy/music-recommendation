@@ -711,13 +711,49 @@ label {
   border: 0.5rem solid black;
 }
 
-.rec-switch{
+.rec-switch {
   display: flex;
   margin-top: 1.5rem;
   justify-content: center;
 }
 
-.rec-btns{
+.rec-btns {
   display: flex;
   gap: 1rem;
+}
+
+.map-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  height: 2.5rem;
+}
+
+.map-form {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 1rem !important;
+}
+
+.map-form input{
+  padding: 0.38rem 0.63rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  width: 7.5rem;
+  height: 1.75rem;
+  margin-left: 1.5rem;
+}
+.map-search {
+  padding: 0.38rem 0.5rem;
+  background-color: #6c757d;
+  color: white;
+  cursor: pointer;
+  border: none;
+  font-size: 0.75rem;
+  height: 1.75rem;
+  border-radius: 0.2rem;
 }
