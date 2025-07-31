@@ -13,7 +13,7 @@ import { getTopSongs, getTopUsers } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import { reverseGeocoder } from "../utils/reverseGeocode";
 import { Notify } from "../utils/toast";
-import { ROLE } from "../AdminSections";
+import { ROLE } from "../admin/AdminSections";
 export default function Dashboard() {
   ChartJS.register(
     CategoryScale,

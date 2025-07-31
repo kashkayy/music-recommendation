@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Hamburger from "hamburger-react";
-import { SECTIONS } from "../AdminSections";
+import { SECTIONS } from "../admin/AdminSections";
 export default function Sidebar({ onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
