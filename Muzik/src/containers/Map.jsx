@@ -1,10 +1,15 @@
-import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  useMap,
+} from "@vis.gl/react-google-maps";
 import { useAuth } from "../auth/AuthContext";
 import useFetchClusters from "../hooks/useFetchClusters";
+import useMapSearch from "../hooks/useMapSearch";
 import useDebounce from "../hooks/useDebounce";
 import { Spinner } from "react-spinner-toolkit";
-import { useState } from "react";
-import { useMap } from "@vis.gl/react-google-maps";
+import { useState, useEffect } from "react";
 import ClusterModal from "../components/clusterModal";
 const center = {
   lat: 20.0,
@@ -21,8 +26,13 @@ const options = {
     strictBounds: true,
   },
 };
-function ClusteredMap({ clusters, onClusterClick }) {
+function ClusteredMap({ clusters, onClusterClick, onMapReady }) {
   const map = useMap();
+  useEffect(() => {
+    if (map && onMapReady) {
+      onMapReady(map);
+    }
+  }, [map, onMapReady]);
   return clusters.map((cluster) => (
     <AdvancedMarker
       key={cluster.id}
@@ -49,6 +59,7 @@ function ClusteredMap({ clusters, onClusterClick }) {
 export default function MapPage({ userLat, userLng, onSave, favorites }) {
   const { user } = useAuth();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [mapInstance, setMapInstance] = useState(null);
   const {
     handleMapIdle,
     clusters,
@@ -59,10 +70,44 @@ export default function MapPage({ userLat, userLng, onSave, favorites }) {
     handleModalClose,
     showModal,
   } = useFetchClusters();
+  const {
+    searchQuery,
+    setSearchQuery,
+    isSearching,
+    handleSearch,
+    clearSearch,
+  } = useMapSearch();
   const debouncedMapIdle = useDebounce(handleMapIdle, 400);
+  function handleMapSearch(event) {
+    event.preventDefault();
+    if (mapInstance && searchQuery.trim()) {
+      handleSearch(searchQuery, mapInstance, handleMapIdle);
+    }
+  }
   return (
     <>
-      <h3>Welcome {user.username}</h3>
+      <div className="map-header">
+        <h3 style={{ marginLeft: "1.5rem", fontSize: "1rem" }}>
+          Welcome {user.username}
+        </h3>
+        <div>
+          <form onSubmit={handleMapSearch} className="map-form">
+            <input
+              type="text"
+              placeholder="Discover music in..."
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              disabled={isSearching}
+            />
+            <button className="map-search">{isSearching ? "..." : "🔍"}</button>
+            {searchQuery && (
+              <button className="map-search" onClick={clearSearch}>
+                x
+              </button>
+            )}
+          </form>
+        </div>
+      </div>
       <APIProvider
         apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
         onLoad={() => {
@@ -85,6 +130,7 @@ export default function MapPage({ userLat, userLng, onSave, favorites }) {
               <ClusteredMap
                 clusters={clusters}
                 onClusterClick={handleMarkerClick}
+                onMapReady={setMapInstance}
               />
               {showModal && (
                 <ClusterModal
