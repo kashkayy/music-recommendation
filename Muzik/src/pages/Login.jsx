@@ -4,11 +4,14 @@ import { login } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import { Notify } from "../utils/toast";
 import { Spinner } from "react-spinner-toolkit";
+import usePassword from "../hooks/usePassword.jsx";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 export default function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { showPassword, handlePasswordVisibility } = usePassword();
   const { login: saveToken, isAuthenticated } = useAuth();
   useEffect(() => {
     if (isAuthenticated) {
@@ -69,14 +72,17 @@ export default function Login() {
             required
           />
         </label>
-        <label>
+        <label className="password">
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
           />
+          <div className="toggle-password" onClick={handlePasswordVisibility}>
+            {showPassword ? <FaEye /> : <FaEyeSlash />}
+          </div>
         </label>
         <button type="submit">Log in</button>
       </form>
