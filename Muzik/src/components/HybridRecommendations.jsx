@@ -3,22 +3,26 @@ import { useEffect, useState } from "react";
 import { Spinner } from "react-spinner-toolkit";
 import { Notify } from "../utils/toast";
 import { FaPlay, FaPause } from "react-icons/fa";
-import useSongPlayer from "../hooks/SongPlayer";
 import AudioPlayer from "./AudioPlayer";
-export default function Hybrid({ onSave, userLat, userLng, range, userId }) {
+export default function Hybrid({
+  onSave,
+  userLat,
+  userLng,
+  range,
+  userId,
+  registerRef,
+  artist,
+  title,
+  handleEnd,
+  isPlaying,
+  handleCardClick,
+  checkSongPlaying,
+  handlePlayPauseClick,
+  isClicked,
+  currSong,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
-  const {
-    isPlaying,
-    checkSongPlaying,
-    handlePlayPauseClick,
-    artist,
-    title,
-    handleEnd,
-    handleCardClick,
-    currSong,
-    isClicked,
-  } = useSongPlayer();
   useEffect(() => {
     async function getResults() {
       setIsLoading(true);
@@ -60,6 +64,7 @@ export default function Hybrid({ onSave, userLat, userLng, range, userId }) {
             checkSongPlaying(recommendation.song) ? "playing" : ""
           }`}
           key={recommendation.song.id}
+          ref={(element) => registerRef(recommendation.song.id, element)}
           onClick={() => handleCardClick(recommendation.song)}
         >
           <div className="card-img-wrapper">

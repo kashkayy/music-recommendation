@@ -3,23 +3,25 @@ import { getSvdRecommendations } from "../api";
 import { Spinner } from "react-spinner-toolkit";
 import { Notify } from "../utils/toast";
 import { FaPlay, FaPause } from "react-icons/fa";
-import useSongPlayer from "../hooks/SongPlayer";
 import AudioPlayer from "./AudioPlayer";
 import { useAuth } from "../auth/AuthContext";
-export default function SVD({ onSave, userLat, userLng }) {
+export default function SVD({
+  onSave,
+  userLat,
+  userLng,
+  registerRef,
+  artist,
+  title,
+  handleEnd,
+  isPlaying,
+  handleCardClick,
+  checkSongPlaying,
+  handlePlayPauseClick,
+  isClicked,
+  currSong,
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
-  const {
-    isPlaying,
-    checkSongPlaying,
-    handlePlayPauseClick,
-    artist,
-    title,
-    handleEnd,
-    handleCardClick,
-    currSong,
-    isClicked,
-  } = useSongPlayer();
   const { user } = useAuth();
   useEffect(() => {
     async function getResults() {
@@ -57,6 +59,7 @@ export default function SVD({ onSave, userLat, userLng }) {
             checkSongPlaying(recommendation) ? "playing" : ""
           }`}
           key={recommendation.id}
+          ref={(element) => registerRef(recommendation.id, element)}
           onClick={() => handleCardClick(recommendation)}
         >
           <div className="card-img-wrapper">
