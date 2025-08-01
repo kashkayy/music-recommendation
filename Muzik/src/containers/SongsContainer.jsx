@@ -127,9 +127,8 @@ export default function SongsContainer({
     if (mode === MODES.HAV) {
       return recommendations.map((recommendation) => (
         <div
-          className={`song-card ${
-            checkSongPlaying(recommendation.song) ? "playing" : ""
-          }`}
+          className={`song-card ${checkSongPlaying(recommendation.song) ? "playing" : ""
+            }`}
           key={recommendation.song.id}
           ref={(element) => registerRef(recommendation.song.id, element)}
           onClick={() => handleCardClick(recommendation.song)}
@@ -186,7 +185,21 @@ export default function SongsContainer({
       ));
     } else if (mode === MODES.SVD) {
       return (
-        <SVD onSave={handleAddToFavorite} userLat={userLat} userLng={userLng} />
+        <SVD
+          onSave={handleAddToFavorite}
+          userLat={userLat}
+          userLng={userLng}
+          registerRef={registerRef}
+          artist={artist}
+          title={title}
+          handleEnd={handleEnd}
+          isPlaying={isPlaying}
+          handleCardClick={handleCardClick}
+          checkSongPlaying={checkSongPlaying}
+          handlePlayPauseClick={handlePlayPauseClick}
+          isClicked={isClicked}
+          currSong={currSong}
+        />
       );
     } else if (mode === MODES.HYBRID) {
       return (
@@ -196,6 +209,16 @@ export default function SongsContainer({
           userLng={userLng}
           range={range}
           userId={user.id}
+          registerRef={registerRef}
+          artist={artist}
+          title={title}
+          handleEnd={handleEnd}
+          isPlaying={isPlaying}
+          handleCardClick={handleCardClick}
+          checkSongPlaying={checkSongPlaying}
+          handlePlayPauseClick={handlePlayPauseClick}
+          isClicked={isClicked}
+          currSong={currSong}
         />
       );
     }
@@ -278,9 +301,8 @@ export default function SongsContainer({
           <div className="favorite-songs">
             {favorites.map((favorite) => (
               <div
-                className={`song-card ${
-                  checkSongPlaying(favorite.song) ? "playing" : ""
-                }`}
+                className={`song-card ${checkSongPlaying(favorite.song) ? "playing" : ""
+                  }`}
                 key={favorite.song.id}
                 onClick={() => handleCardClick(favorite.song)}
                 ref={(element) => registerRef(favorite.song.id, element)}
