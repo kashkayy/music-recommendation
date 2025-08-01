@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Notify } from "../utils/toast.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { Spinner } from "react-spinner-toolkit";
-import { FaEye } from 'react-icons/fa';
-import { FaEyeSlash } from 'react-icons/fa';
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 import usePassword from "../hooks/usePassword.jsx";
 export default function SignUp() {
   const navigate = useNavigate();
@@ -14,10 +14,20 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
-  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated } = useAuth();
-  const { showPassword, handlePasswordVisibility, showConfirmPassword, handleConfirm, handleCheckPassword, passwordsMatch } = usePassword()
+  const {
+    showPassword,
+    handlePasswordVisibility,
+    showConfirmPassword,
+    handleConfirm,
+    handleCheckPassword,
+    passwordsMatch,
+    handleUsername,
+    handleValidatePassword,
+    validPassword,
+  } = usePassword();
+  const minLength = 8;
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -28,7 +38,8 @@ export default function SignUp() {
         (error) => {
           setError(error.message);
           fetch(
-            `https://api.ipgeolocation.io/ipgeo?apiKey=${import.meta.env.VITE_IP_API_KEY
+            `https://api.ipgeolocation.io/ipgeo?apiKey=${
+              import.meta.env.VITE_IP_API_KEY
             }`
           )
             .then((response) => response.json())
@@ -46,11 +57,12 @@ export default function SignUp() {
     }
 
     handleCheckPassword(password, confirmPassword);
+    handleValidatePassword(password, minLength);
 
     if (isAuthenticated) {
       navigate("/home", { replace: true });
     }
-  }, [isAuthenticated, navigate, password, confirmPassword]);
+  }, [isAuthenticated, navigate, password, confirmPassword, validPassword]);
 
   async function handleCreateUser(newUser) {
     try {
@@ -69,9 +81,17 @@ export default function SignUp() {
 
   function handleSubmit(event) {
     event.preventDefault();
+    const usernameIsValid = handleUsername(username);
+    const passwordIsValid = handleValidatePassword(password, minLength);
     if (password !== confirmPassword) {
       Notify("Passwords do not match");
-      return
+      return;
+    } else if (!usernameIsValid) {
+      Notify("Username can't be empty!");
+      return;
+    } else if (!passwordIsValid) {
+      Notify("Current password does not meet requirements!");
+      return;
     }
     setIsLoading(true);
     const user = { username, password, userLat, userLng };
@@ -116,8 +136,14 @@ export default function SignUp() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
-          /><div className="toggle-password" onClick={handlePasswordVisibility}>{showPassword ? <FaEye /> : <FaEyeSlash />}</div>
+          />
+          <div className="toggle-password" onClick={handlePasswordVisibility}>
+            {showPassword ? <FaEye /> : <FaEyeSlash />}
+          </div>
         </label>
+        {!validPassword && (
+          <p className="error-msg">{`Password must be at least ${minLength} characters!`}</p>
+        )}
         <label className="password">
           <input
             className={!passwordsMatch ? "error" : ""}
@@ -126,9 +152,14 @@ export default function SignUp() {
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
             required
-          /><div className="toggle-password" onClick={handleConfirm}>{showConfirmPassword ? <FaEye /> : <FaEyeSlash />}</div>
+          />
+          <div className="toggle-password" onClick={handleConfirm}>
+            {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
+          </div>
         </label>
-        {confirmPassword && !passwordsMatch && <p className="error-msg">Passwords do not match !</p>}
+        {confirmPassword && !passwordsMatch && (
+          <p className="error-msg">Passwords do not match !</p>
+        )}
         <button type="submit">Sign up!</button>
       </form>
       <span>
