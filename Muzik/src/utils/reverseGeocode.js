@@ -12,9 +12,27 @@ export async function reverseGeocoder(region) {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
   const res = await fetch(url);
   const data = await res.json();
-  //extract city from formatted address
-  const formattedAddress = data?.results?.[0]?.formatted_address;
-  const addressArray = formattedAddress.split(",");
-  const regionName = addressArray[1] || "Unknown Location";
+  // Extract city from address components
+  const addressComponents = data?.results?.[0]?.address_components;
+  let regionName = "Unknown Location";
+  if (addressComponents && addressComponents.length > 0) {
+    const cityComponent = addressComponents.find((component) =>
+      component.types.includes("locality")
+    );
+    const stateComponent = addressComponents.find((component) =>
+      component.types.includes("administrative_area_level_1")
+    );
+    if (cityComponent) {
+      regionName = cityComponent.long_name;
+    } else if (stateComponent) {
+      regionName = stateComponent.long_name;
+    } else {
+      const formattedAddress = data?.results?.[0]?.formatted_address;
+      if (formattedAddress) {
+        const addressArray = formattedAddress.split(",");
+        regionName = addressArray[1]?.trim() || "Unknown Location";
+      }
+    }
+  }
   return regionName;
 }

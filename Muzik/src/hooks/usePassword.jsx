@@ -21,8 +21,10 @@ export default function usePassword() {
   const handleValidatePassword = useCallback((password, minLength) => {
     if (password.length < minLength && password.length > 0) {
       setValidPassword(false);
+      return false;
     } else {
       setValidPassword(true);
+      return true;
     }
   }, []);
   const handleUsername = useCallback((username) => {
