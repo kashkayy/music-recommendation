@@ -38,8 +38,7 @@ export default function SignUp() {
         (error) => {
           setError(error.message);
           fetch(
-            `https://api.ipgeolocation.io/ipgeo?apiKey=${
-              import.meta.env.VITE_IP_API_KEY
+            `https://api.ipgeolocation.io/ipgeo?apiKey=${import.meta.env.VITE_IP_API_KEY
             }`
           )
             .then((response) => response.json())

@@ -233,12 +233,13 @@ export default function SongsContainer({
           <h3 className="songs-header">Recommended songs</h3>
           <div className="rec-switch">
             <div className="rec-btns">
-              {Object.keys(MODES).map((mode) => (
+              {Object.keys(MODES).map((modeKey) => (
                 <button
-                  key={mode}
-                  onClick={(event) => handleModeSwitch(MODES[mode], event)}
+                  key={modeKey}
+                  className={mode === MODES[modeKey] ? "active" : ""}
+                  onClick={(event) => handleModeSwitch(MODES[modeKey], event)}
                 >
-                  {MODES[mode]}
+                  {MODES[modeKey]}
                 </button>
               ))}
             </div>
