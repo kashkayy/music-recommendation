@@ -282,18 +282,29 @@ label {
   cursor: pointer;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 2rem;
   border: none;
-  background-color: transparent;
-  transition: background-color 0.2s ease;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  width: 3rem;
+  height: 3rem;
+  transition: all 0.2s ease;
   z-index: 5;
   justify-content: center;
   align-items: center;
-  border-radius: 25%;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.card-img-wrapper:hover .play-pause-button,
+.song-card.playing .play-pause-button {
+  opacity: 1;
 }
 
 .play-pause-button:hover {
-  background-color: #888;
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
 .card-info {
@@ -621,6 +632,10 @@ label {
   gap: 20px;
   margin-bottom: 30px;
   justify-content: center;
+  max-height: 50rem;
+  overflow-y: auto;
+  padding: 1rem;
+  border-top: #888 solid 3px;
 }
 
 .card-distance {
@@ -722,6 +737,11 @@ label {
   gap: 1rem;
 }
 
+.rec-btns button.active {
+  background-color: #888;
+  color: white;
+}
+
 .map-header {
   display: flex;
   align-items: center;
@@ -738,7 +758,7 @@ label {
   padding: 1rem !important;
 }
 
-.map-form input{
+.map-form input {
   padding: 0.38rem 0.63rem;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -747,6 +767,7 @@ label {
   height: 1.75rem;
   margin-left: 1.5rem;
 }
+
 .map-search {
   padding: 0.38rem 0.5rem;
   background-color: #6c757d;
