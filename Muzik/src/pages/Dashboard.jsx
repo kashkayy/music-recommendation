@@ -82,7 +82,7 @@ export default function Dashboard() {
       title: {
         display: true,
         enabled: true,
-        text: "Top 10 most saved songs🔥",
+        text: "Top saved songs🔥",
         color: "black",
         position: "top",
         font: { size: 30, weight: "bold" },
@@ -104,22 +104,26 @@ export default function Dashboard() {
   return (
     <>
       <div className="dashboard">
-        {user.role === ROLE.globalAdmin ? (
-          <h1>Dashboard for Entire Map</h1>
-        ) : (
-          <h1>Dashboard for {regionName}</h1>
+        {user.role !== ROLE.globalAdmin && (
+          <div style={{ width: "100%", textAlign: "center", marginBottom: "2rem" }}>
+            <h1 style={{ fontSize: "2.5rem" }}>Chart for {regionName}</h1>
+          </div>
         )}
-        <div className="bar-chart">
-          <Bar
-            style={{ padding: "1.5rem", width: "50rem", height: "80rem" }}
-            data={songsProcessedData}
-            options={songsOptions}
-          />
-          <Bar
-            style={{ padding: "1.5rem", width: "50rem", height: "80rem" }}
-            data={usersProcessedData}
-            options={usersOptions}
-          />
+        <div className="bar-chart" style={{ width: "90vw", maxWidth: "1400px" }}>
+          <div style={{ height: "700px", width: "100%", marginBottom: "3rem" }}>
+            <Bar
+              style={{ padding: "2rem" }}
+              data={songsProcessedData}
+              options={songsOptions}
+            />
+          </div>
+          <div style={{ height: "700px", width: "100%" }}>
+            <Bar
+              style={{ padding: "2rem" }}
+              data={usersProcessedData}
+              options={usersOptions}
+            />
+          </div>
         </div>
       </div>
     </>

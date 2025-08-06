@@ -43,7 +43,7 @@ export default function ClusterModal({
         setError("Error loading songs within this cluster");
         setIsLoaded(true);
       });
-  }, [lat, lng, zoom]);
+  }, [lat, lng, zoom, onSave]);
   function isSongFavorited(song) {
     return favorites.some(
       (favorite) =>
@@ -85,9 +85,8 @@ export default function ClusterModal({
             onMouseLeave={handleMouseLeave}
           />
           <div
-            className={`preview-indicator ${
-              checkSongPlaying(song) ? "active" : ""
-            }`}
+            className={`preview-indicator ${checkSongPlaying(song) ? "active" : ""
+              }`}
           >
             {checkSongPlaying(song) && isPlaying ? (
               <FaPause className="cluster-pause" />

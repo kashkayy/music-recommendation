@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { SECTIONS } from "../admin/AdminSections";
+import { SECTIONS, ROLE } from "../admin/AdminSections";
 import Sidebar from "../components/Sidebar";
+import { useAuth } from "../auth/AuthContext";
 import Dashboard from "../pages/Dashboard";
 import UserTable from "../pages/UserTable";
 import SongTable from "../pages/SongTable";
@@ -9,6 +10,7 @@ import { tableColumns } from "../admin/TableColumns";
 export default function AdminContent() {
   const [activeSection, setActiveSection] = useState(SECTIONS.DASHBOARD);
   const [sectionData, setSectionData] = useState([]);
+  const { user } = useAuth();
   async function handleSectionChange(section) {
     setActiveSection(section);
     const data = await fetchData(section);
@@ -36,7 +38,20 @@ export default function AdminContent() {
     <>
       <div className="admin">
         <Sidebar onSelect={handleSectionChange} />
-        {renderContent()}
+        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+          {activeSection === SECTIONS.DASHBOARD && user?.role === ROLE.globalAdmin && (
+            <h1 style={{
+              fontSize: "2.5rem",
+              marginBottom: "1rem",
+              marginTop: "1rem",
+              textAlign: "center",
+              width: "100%"
+            }}>
+              Chart for Entire Map
+            </h1>
+          )}
+          {renderContent()}
+        </div>
       </div>
     </>
   );
