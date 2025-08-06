@@ -21,9 +21,12 @@ export default function SongsContainer({
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [mode, setMode] = useState(MODES.HAV);
+  const [showNowPlaying, setShowNowPlaying] = useState(true);
   function handleModeSwitch(mode, event) {
     event.preventDefault();
     setMode(mode);
+    // Hide the now playing bar when switching recommendation types
+    setShowNowPlaying(false);
   }
   const songRef = useRef({});
   function registerRef(id, element) {
@@ -37,14 +40,26 @@ export default function SongsContainer({
   const {
     isPlaying,
     checkSongPlaying,
-    handlePlayPauseClick,
+    handlePlayPauseClick: originalHandlePlayPauseClick,
     artist,
     title,
     handleEnd,
-    handleCardClick,
+    handleCardClick: originalHandleCardClick,
     currSong,
     isClicked,
   } = useSongPlayer();
+
+  // Wrap the original handleCardClick to also set showNowPlaying
+  const handleCardClick = (song) => {
+    originalHandleCardClick(song);
+    setShowNowPlaying(true);
+  };
+
+  // Wrap the original handlePlayPauseClick to also set showNowPlaying
+  const handlePlayPauseClick = (song, event) => {
+    originalHandlePlayPauseClick(song, event);
+    setShowNowPlaying(true);
+  };
 
   const {
     getRecommendations,
@@ -74,6 +89,9 @@ export default function SongsContainer({
   }
   async function handleRemove(songId, lat, lng, event) {
     event.stopPropagation();
+    // Hide the now playing bar when removing a song from favorites
+    setShowNowPlaying(false);
+
     await deleteSavedSong(songId, lat, lng).then((data) => {
       if (data.ok) {
         setFavorites(data.results);
@@ -82,6 +100,9 @@ export default function SongsContainer({
   }
   async function handleAddToFavorite(song, lat, lng, event) {
     event.stopPropagation();
+    // Hide the now playing bar when adding a song to favorites
+    setShowNowPlaying(false);
+
     await saveSong(
       song.id,
       lat,
@@ -244,11 +265,14 @@ export default function SongsContainer({
           userLng={userLng}
         />
       )}
-      {currSong && (
+      {currSong && showNowPlaying && (
         <NowPlaying
           currSong={currSong}
           isPlaying={isPlaying}
-          onPlaying={() => scrollToSong(currSong.id)}
+          onPlaying={() => {
+            scrollToSong(currSong.id);
+            setShowNowPlaying(true);
+          }}
         />
       )}
       <div className="recommended-container">

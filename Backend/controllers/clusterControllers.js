@@ -45,7 +45,7 @@ export async function getTopSongs({ lat, lng, zoom }) {
   const latMax = lat + bucketLat / 2;
   const lngMin = lng - bucketLng / 2;
   const lngMax = lng + bucketLng / 2;
-  const songLimit = 5;
+  const songLimit = 7;
   try {
     const topSongs = await prisma.$queryRaw`
       SELECT
